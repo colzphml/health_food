@@ -288,6 +288,51 @@
     font-weight: 500;
   }
 
+  /* ─── Recipe in modal ─── */
+  .recipe-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 12px 0 10px;
+  }
+  .recipe-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .recipe-step {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 7px;
+    align-items: flex-start;
+  }
+  .recipe-num {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--tag-bg);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .recipe-text {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--text);
+    padding-top: 1px;
+  }
+  .recipe-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
   /* ─── Info Card (Shopping / Cooking) ─── */
   .info-card {
     background: var(--card);
@@ -484,6 +529,12 @@
             <div class="portion-row"><span class="portion-name">Хлеб цельнозерновой</span><span class="portion-amount">2 куска (~60 г)</span></div>
             <div class="portion-row"><span class="portion-name">Масло подсолнечное</span><span class="portion-amount">5 г (1 ч.л.)</span></div>
             <div class="back-kcal">≈ 480 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Как готовить</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text">Взбей 2 яйца с 50 мл молока и щепоткой соли вилкой до однородности.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text">Помидор нарежь кубиками ~1 см.</div></div>
+            <div class="recipe-step"><div class="recipe-num">3</div><div class="recipe-text">Сковороду смажь 1 ч.л. масла, разогрей на среднем огне. Вылей яйца.</div></div>
+            <div class="recipe-step"><div class="recipe-num">4</div><div class="recipe-text">Сверху выложи помидор, накрой крышкой на 3–4 мин до схватывания. Подавай с хлебом.</div></div>
           </div>
         </div>
       </div>
@@ -502,6 +553,7 @@
             <div class="portion-row"><span class="portion-name">Йогурт натуральный ≤3%</span><span class="portion-amount">150 г</span></div>
             <div class="portion-row"><span class="portion-name">Банан</span><span class="portion-amount">1 шт (~120 г)</span></div>
             <div class="back-kcal">≈ 235 ккал</div>
+            <div class="recipe-note">Нарежь банан кружочками, выложи на йогурт. Готово.</div>
           </div>
         </div>
       </div>
@@ -521,6 +573,7 @@
             <div class="portion-row"><span class="portion-name">Гречка варёная</span><span class="portion-amount">150 г</span></div>
             <div class="portion-row"><span class="portion-name">Куриная грудка варёная</span><span class="portion-amount">120 г</span></div>
             <div class="back-kcal">≈ 530 ккал</div>
+            <div class="recipe-note">Всё из холодильника. Суп — разогреть в кастрюле или микроволновке. Гречку и грудку — в микроволновке 2 мин с 1 ч.л. воды.</div>
           </div>
         </div>
       </div>
@@ -540,6 +593,7 @@
             <div class="portion-row"><span class="portion-name">Яблоко</span><span class="portion-amount">1 шт (~150 г)</span></div>
             <div class="portion-row"><span class="portion-name">Хлебцы цельнозерновые</span><span class="portion-amount">2 шт (~20 г)</span></div>
             <div class="back-kcal">≈ 265 ккал</div>
+            <div class="recipe-note">Яблоко нарежь дольками или ешь целиком. Кефир — в стакан. Хлебцы — отдельно.</div>
           </div>
         </div>
       </div>
@@ -561,6 +615,12 @@
             <div class="portion-row"><span class="portion-name">Гречка варёная</span><span class="portion-amount">100 г</span></div>
             <div class="portion-row"><span class="portion-name">Масло оливковое</span><span class="portion-amount">5 г (1 ч.л.)</span></div>
             <div class="back-kcal">≈ 475 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Как готовить (тушёные овощи)</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text">Морковь нарежь кружочками, кабачок — кубиками ~2 см.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text">В сковороду — 1 ч.л. масла. Обжарь морковь 3 мин на среднем огне.</div></div>
+            <div class="recipe-step"><div class="recipe-num">3</div><div class="recipe-text">Добавь кабачок + 3 ст.л. воды. Посоли. Туши под крышкой 10–12 мин, изредка помешивая.</div></div>
+            <div class="recipe-step"><div class="recipe-num">4</div><div class="recipe-text">Грудку и гречку разогрей в микроволновке 2 мин с 1 ч.л. воды.</div></div>
           </div>
         </div>
       </div>
@@ -588,6 +648,11 @@
             <div class="portion-row"><span class="portion-name">Молоко 1,5–2%</span><span class="portion-amount">250 мл</span></div>
             <div class="portion-row"><span class="portion-name">Яблоко (тёртое)</span><span class="portion-amount">1 шт (~130 г)</span></div>
             <div class="back-kcal">≈ 585 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Как готовить</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text">Залей 120 г овсянки 250 мл молока в кастрюле. Доведи до кипения на среднем огне, помешивая.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text">Убавь огонь, вари 5–7 мин до нужной густоты. Посоли чуть-чуть.</div></div>
+            <div class="recipe-step"><div class="recipe-num">3</div><div class="recipe-text">Яблоко натри на крупной тёрке прямо в кашу, перемешай. Снять с огня.</div></div>
           </div>
         </div>
       </div>
@@ -606,6 +671,7 @@
             <div class="portion-row"><span class="portion-name">Творог 5%</span><span class="portion-amount">120 г</span></div>
             <div class="portion-row"><span class="portion-name">Груша</span><span class="portion-amount">1 шт (~150 г)</span></div>
             <div class="back-kcal">≈ 255 ккал</div>
+            <div class="recipe-note">Грушу нарежь дольками. Творог — в миску. Можно смешать или есть отдельно.</div>
           </div>
         </div>
       </div>
@@ -625,6 +691,7 @@
             <div class="portion-row"><span class="portion-name">Перловка варёная</span><span class="portion-amount">150 г</span></div>
             <div class="portion-row"><span class="portion-name">Куриная грудка варёная</span><span class="portion-amount">120 г</span></div>
             <div class="back-kcal">≈ 530 ккал</div>
+            <div class="recipe-note">Всё из холодильника. Суп разогреть в кастрюле. Перловку и грудку — в микроволновке 2 мин с 1 ч.л. воды.</div>
           </div>
         </div>
       </div>
@@ -643,6 +710,7 @@
             <div class="portion-row"><span class="portion-name">Кефир 2,5%</span><span class="portion-amount">200 мл</span></div>
             <div class="portion-row"><span class="portion-name">Хлебцы цельнозерновые</span><span class="portion-amount">2 шт (~20 г)</span></div>
             <div class="back-kcal">≈ 175 ккал</div>
+            <div class="recipe-note">Кефир — в стакан. Хлебцы — отдельно. Перекус-минутка.</div>
           </div>
         </div>
       </div>
@@ -663,6 +731,12 @@
             <div class="portion-row"><span class="portion-name">Перловка варёная</span><span class="portion-amount">100 г</span></div>
             <div class="portion-row"><span class="portion-name">Масло оливковое</span><span class="portion-amount">5 г (1 ч.л.)</span></div>
             <div class="back-kcal">≈ 495 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Как готовить</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text"><b>Котлеты:</b> 300 г фарша + 1 яйцо + 1 ст.л. овсянки + ½ ч.л. соли + щепотка перца. Перемешай. Слепи 5–6 котлет.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text">Разложи на пергамент, капни оливковое масло. Духовка 180°C, 22–25 мин — не переворачивать.</div></div>
+            <div class="recipe-step"><div class="recipe-num">3</div><div class="recipe-text"><b>Цветная капуста</b> (замороженная): в сковороду + 3 ст.л. воды + 1 ч.л. масла. Туши под крышкой 7–8 мин, посоли.</div></div>
+            <div class="recipe-step"><div class="recipe-num">4</div><div class="recipe-text">Перловку разогрей в микроволновке с 1 ч.л. воды.</div></div>
           </div>
         </div>
       </div>
@@ -690,6 +764,11 @@
             <div class="portion-row"><span class="portion-name">Молоко 1,5–2% (залить горячим)</span><span class="portion-amount">200 мл</span></div>
             <div class="portion-row"><span class="portion-name">Банан</span><span class="portion-amount">1 шт (~120 г)</span></div>
             <div class="back-kcal">≈ 610 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Как готовить</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text">100 г варёной гречки выложи в тарелку.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text">Молоко нагрей в кастрюльке или микроволновке до горячего (не кипятить).</div></div>
+            <div class="recipe-step"><div class="recipe-num">3</div><div class="recipe-text">Залей гречку горячим молоком, подожди 2–3 мин. Нарежь банан.</div></div>
           </div>
         </div>
       </div>
@@ -708,6 +787,7 @@
             <div class="portion-row"><span class="portion-name">Йогурт натуральный ≤3%</span><span class="portion-amount">150 г</span></div>
             <div class="portion-row"><span class="portion-name">Яблоко</span><span class="portion-amount">1 шт (~150 г)</span></div>
             <div class="back-kcal">≈ 205 ккал</div>
+            <div class="recipe-note">Яблоко нарежь дольками. Йогурт — в миску. Можно макать — вкусно и быстро.</div>
           </div>
         </div>
       </div>
@@ -727,6 +807,7 @@
             <div class="portion-row"><span class="portion-name">Перловка варёная</span><span class="portion-amount">150 г</span></div>
             <div class="portion-row"><span class="portion-name">Индейка / курица варёная</span><span class="portion-amount">120 г</span></div>
             <div class="back-kcal">≈ 545 ккал</div>
+            <div class="recipe-note">Всё из холодильника. Борщ разогреть в кастрюле. Перловку и птицу — в микроволновке 2 мин.</div>
           </div>
         </div>
       </div>
@@ -745,6 +826,7 @@
             <div class="portion-row"><span class="portion-name">Творог 5%</span><span class="portion-amount">120 г</span></div>
             <div class="portion-row"><span class="portion-name">Груша</span><span class="portion-amount">1 шт (~150 г)</span></div>
             <div class="back-kcal">≈ 255 ккал</div>
+            <div class="recipe-note">Грушу нарежь дольками. Творог — в миску. Можно смешать или есть отдельно.</div>
           </div>
         </div>
       </div>
@@ -766,6 +848,12 @@
             <div class="portion-row"><span class="portion-name">Перловка варёная</span><span class="portion-amount">100 г</span></div>
             <div class="portion-row"><span class="portion-name">Масло оливковое</span><span class="portion-amount">5 г (1 ч.л.)</span></div>
             <div class="back-kcal">≈ 430 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Как готовить</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text"><b>Треска:</b> филе 120 г положи на фольгу. Посоли, сбрызни 1 ч.л. масла, заверни в фольгу конвертом.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text">Духовка 190°C, 18–20 мин. Готово, когда рыба легко расслаивается вилкой.</div></div>
+            <div class="recipe-step"><div class="recipe-num">3</div><div class="recipe-text"><b>Свёкла и морковь:</b> нарежь кубиками. В сковороду — 1 ч.л. масла + 2 ст.л. воды. Туши под крышкой 8–10 мин, посоли.</div></div>
+            <div class="recipe-step"><div class="recipe-num">4</div><div class="recipe-text">Перловку разогрей в микроволновке с 1 ч.л. воды.</div></div>
           </div>
         </div>
       </div>
