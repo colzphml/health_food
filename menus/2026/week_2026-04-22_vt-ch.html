@@ -2,8 +2,15 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Рацион: Вт – Чт</title>
+<!-- PWA -->
+<link rel="manifest" href="/health_food/manifest.json">
+<meta name="theme-color" content="#0f1210">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Рацион">
+<link rel="apple-touch-icon" href="/health_food/icons/icon-180.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -498,6 +505,64 @@
     font-size: 11.5px;
     color: var(--accent);
   }
+
+  /* safe area iOS */
+  body { padding-bottom: env(safe-area-inset-bottom, 16px); }
+  .back-link { padding-top: max(20px, calc(env(safe-area-inset-top) + 8px)); }
+
+  /* Текущий день */
+  .day-col.today .day-label {
+    color: var(--accent2);
+  }
+  .today-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #0f1210;
+    background: var(--accent2);
+    border-radius: 100px;
+    padding: 2px 7px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* Прошедшие дни */
+  .past-header {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    font-weight: 500;
+    padding: 24px 0 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+    grid-column: 1 / -1;
+  }
+  .day-col.past .day-label { color: var(--text-dim); }
+  .day-col.past .card-front { opacity: 0.55; }
+
+  /* Pull-to-refresh */
+  #ptr {
+    position: fixed;
+    top: -56px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 44px; height: 44px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #0f1210;
+    z-index: 999;
+    transition: top 0.18s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  #ptr.show { top: calc(env(safe-area-inset-top, 0px) + 14px); }
+  #ptr svg { width: 22px; height: 22px; transition: transform 0.18s; }
+  #ptr.ready svg { transform: rotate(180deg); }
+  #ptr.spin svg { animation: ptr-spin 0.5s linear infinite; }
+  @keyframes ptr-spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -521,7 +586,7 @@
   <div class="days-grid">
 
     <!-- ── ВТОРНИК ── -->
-    <div class="day-col">
+    <div class="day-col" data-date="2026-04-28">
       <div class="day-label">
         Вторник, 28 апр.
         <span class="day-kcal-total">~1985 ккал</span>
@@ -642,7 +707,7 @@
     </div>
 
     <!-- ── СРЕДА ── -->
-    <div class="day-col">
+    <div class="day-col" data-date="2026-04-29">
       <div class="day-label">
         Среда, 29 апр.
         <span class="day-kcal-total">~2040 ккал</span>
@@ -758,7 +823,7 @@
     </div>
 
     <!-- ── ЧЕТВЕРГ ── -->
-    <div class="day-col">
+    <div class="day-col" data-date="2026-04-30">
       <div class="day-label">
         Четверг, 30 апр.
         <span class="day-kcal-total">~2045 ккал</span>
@@ -1182,11 +1247,20 @@
   </div>
 </section>
 
+<!-- Pull-to-refresh индикатор -->
+<div id="ptr">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+    <polyline points="21 3 21 9 15 9"/>
+  </svg>
+</div>
+
 <div id="card-modal" onclick="if(event.target===this)closeModal()">
   <div id="card-modal-inner"></div>
 </div>
 
 <script>
+  // ── Навигация по секциям ──
   function showSection(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -1194,6 +1268,7 @@
     event.target.classList.add('active');
   }
 
+  // ── Модал карточки ──
   function openCard(el) {
     const back = el.querySelector('.card-back').innerHTML;
     document.getElementById('card-modal-inner').innerHTML =
@@ -1208,6 +1283,84 @@
   }
 
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ── Текущий день + прошедшие вниз ──
+  (function organizeDays() {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const grid = document.querySelector('.days-grid');
+    const cols = Array.from(grid.querySelectorAll('.day-col'));
+
+    const past = [], present = [], future = [];
+
+    cols.forEach(col => {
+      const d = col.dataset.date;
+      if (!d) { future.push(col); return; }
+      if (d < todayStr)       past.push(col);
+      else if (d === todayStr) present.push(col);
+      else                    future.push(col);
+    });
+
+    // Пометить текущий день
+    present.forEach(col => {
+      col.classList.add('today');
+      const label = col.querySelector('.day-label');
+      if (label) label.insertAdjacentHTML('beforeend', '<span class="today-badge">Сегодня</span>');
+    });
+
+    // Пометить прошедшие
+    past.forEach(col => col.classList.add('past'));
+
+    // Переставить: сначала сегодня, потом будущие, потом прошедшие
+    cols.forEach(c => c.remove());
+    [...present, ...future].forEach(c => grid.appendChild(c));
+
+    if (past.length > 0) {
+      const sep = document.createElement('div');
+      sep.className = 'past-header';
+      sep.textContent = 'Прошедшие дни';
+      grid.appendChild(sep);
+      past.forEach(c => grid.appendChild(c));
+    }
+  })();
+
+  // ── Service Worker ──
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/health_food/sw.js', { scope: '/health_food/' });
+  }
+
+  // ── Pull-to-refresh ──
+  (function () {
+    const ptr = document.getElementById('ptr');
+    const THRESHOLD = 72;
+    let startY = 0, delta = 0, active = false;
+
+    document.addEventListener('touchstart', e => {
+      if (window.scrollY === 0) { startY = e.touches[0].clientY; active = true; }
+    }, { passive: true });
+
+    document.addEventListener('touchmove', e => {
+      if (!active) return;
+      delta = Math.max(0, e.touches[0].clientY - startY);
+      if (delta > 10) {
+        ptr.classList.add('show');
+        if (delta > THRESHOLD) ptr.classList.add('ready');
+        else ptr.classList.remove('ready');
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchend', () => {
+      if (!active) return;
+      active = false;
+      if (delta > THRESHOLD) {
+        ptr.classList.remove('ready');
+        ptr.classList.add('spin');
+        setTimeout(() => location.reload(), 450);
+      } else {
+        ptr.classList.remove('show', 'ready');
+      }
+      delta = 0;
+    });
+  })();
 </script>
 
 </body>

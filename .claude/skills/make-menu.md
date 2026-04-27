@@ -165,8 +165,11 @@ TDEE    = BMR × 1.375   (умеренная активность)
 
 **Требования:**
 - Полностью копируй CSS-переменные и стили из `menus/2026/week_2026-04-22_vt-ch.html`
+- В `<head>`: PWA-теги (manifest, apple-mobile-web-app-*, theme-color, apple-touch-icon)
 - Перед `<header>` — кнопка возврата: `<a class="back-link" href="../../index.html">← Все меню</a>`
 - Та же структура: back-link → header → nav (📅 Дни / 🛒 Покупки / 🍳 Готовка) → sections
+- Каждой колонке дня добавлять `data-date="YYYY-MM-DD"` (ISO дата этого дня)
+- В конце файла: pull-to-refresh div + весь скрипт из эталона (organizeDays, SW, PTR)
 - Секция «Дни»: 7 колонок (grid 3+4 или 4+3, с `@media` для мобилки)
 - Карточки с flip-modal (onclick → openCard → #card-modal)
 - Секция «Покупки»: сгруппированный список
