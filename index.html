@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рационы питания — Сергей & Эльвира</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1210;
+    --surface: #181e19;
+    --card: #1e2720;
+    --border: #2e3d2e;
+    --accent: #7fb069;
+    --accent2: #d4956a;
+    --text: #e8ede6;
+    --text-muted: #7a9175;
+    --text-dim: #4a5e48;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+  header {
+    padding: 40px 24px 0;
+    text-align: center;
+  }
+  header::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 2px;
+    background: var(--accent);
+    margin: 14px auto 0;
+    border-radius: 2px;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 5vw, 36px);
+    color: var(--text);
+  }
+  header p {
+    margin-top: 6px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  main {
+    max-width: 700px;
+    margin: 40px auto 0;
+    padding: 0 20px;
+  }
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .menu-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .menu-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent)22;
+  }
+  .menu-card-left .week { font-size: 14px; font-weight: 500; }
+  .menu-card-left .days { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+  .menu-card-right {
+    font-size: 12px;
+    color: var(--accent2);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .empty {
+    color: var(--text-dim);
+    font-size: 13px;
+    text-align: center;
+    padding: 40px 0;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Рационы питания</h1>
+  <p>Сергей &amp; Эльвира · персональные меню по неделям</p>
+</header>
+<main>
+  <h2>Готовые меню</h2>
+  <div class="menu-list">
+
+    <a class="menu-card" href="menus/2026/week_2026-04-22_vt-ch.html">
+      <div class="menu-card-left">
+        <div class="week">Неделя 22 апреля 2026</div>
+        <div class="days">Вторник – Четверг · ~2070 ккал/день</div>
+      </div>
+      <div class="menu-card-right">→</div>
+    </a>
+
+  </div>
+</main>
+</body>
+</html>
