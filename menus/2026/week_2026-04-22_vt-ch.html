@@ -33,9 +33,23 @@
     padding: 0 0 60px;
   }
 
+  /* ─── Back link ─── */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 20px 24px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--accent); }
+
   /* ─── Header ─── */
   header {
-    padding: 32px 24px 0;
+    padding: 16px 24px 0;
     text-align: center;
     position: relative;
   }
@@ -488,6 +502,7 @@
 </head>
 <body>
 
+<a class="back-link" href="../../index.html">← Все меню</a>
 <header>
   <h1>Рацион Вторник — Четверг</h1>
   <p>~2100–2200 ккал · нажми на карточку, чтобы увидеть порции</p>
