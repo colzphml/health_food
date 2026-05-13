@@ -29,12 +29,34 @@ Read: rules/elvira_diet.md   ← рекомендации тренера
 Read: equipment/equipment.md
 ```
 
-### 1.4 История блюд — что было и что не понравилось
+### 1.4 ⚠️ ОБЯЗАТЕЛЬНО — Активные правила питания (`food_rules`)
 
-Запусти через Bash:
+**Это первоисточник правил «нравится / надоело / нельзя». Без этого блока меню НЕ генерировать.**
+
 ```bash
 cd /Users/colz/gitrepos/envs/health_food
 
+sqlite3 history/menu_history.db "
+SELECT category, name, person, rating, note, valid_until
+FROM food_rules
+WHERE valid_until IS NULL OR valid_until >= date('now')
+ORDER BY rating ASC, person, name;
+"
+```
+
+**Логика обработки `rating`:**
+| rating | смысл | что делать |
+|---|---|---|
+| **-2** | запрет (медицинский) | **НИКОГДА** не предлагать. Если `person='Сергей'` — фильтровать только из его меню; `person='оба'` — у обоих. |
+| **-1** | временно надоело | не предлагать, пока `valid_until` не прошёл. Срок истёк → можно опять. |
+| **+1** | нравится | в обычной ротации, без особенностей |
+| **+2** | топ | держать в ротации, **повторять каждые 2–3 недели**, не выбрасывать |
+
+Для `category='cooking_method'` с rating ≥ 1 — это **руководство по способу готовки** (например, «тефтели/котлеты в духовке: строго 200°C/40 мин»). Применять при описании рецептов.
+
+### 1.5 История блюд — что было и что не понравилось
+
+```bash
 # Блюда за последние 4 недели — чтобы не повторяться
 sqlite3 history/menu_history.db "
 SELECT md.meal_type, md.dish_name, md.liked
@@ -44,7 +66,7 @@ ORDER BY mw.week_start DESC
 LIMIT 80;
 "
 
-# Блюда с оценкой «не понравилось» (liked=0) — НИКОГДА не предлагать
+# Блюда с оценкой liked=0 (per-приём пищи трекер)
 sqlite3 history/menu_history.db "
 SELECT DISTINCT dish_name
 FROM menu_dishes
@@ -100,9 +122,11 @@ TDEE    = BMR × 1.2     (сидячая работа — у Сергея име
 ### Правила разнообразия:
 - **Белок** чередовать по дням: курица → индейка → рыба → творог → яйца → говядина → кролик
 - **Крупы** чередовать: гречка → овсянка → перловка → булгур → бурый рис → киноа → пшено
+  - ⚠️ Перед выбором крупы — **сверься с `food_rules`** (шаг 1.4): то что rating=-1 с активным сроком — пропускать
 - **Овощи** — каждый день разные, сочетание тушёных + свежих
 - Одно блюдо — не чаще 1 раза в неделю
-- Блюда из истории «не понравилось» (liked=0) — **НИКОГДА не предлагать**
+- ⚠️ **Любой ингредиент / блюдо с rating ≤ -1 в `food_rules` (см. 1.4) — фильтровать. rating=+2 — стараться использовать каждые 2–3 недели.**
+- Блюда из истории `menu_dishes.liked=0` — НИКОГДА не предлагать (per-приём трекер)
 - Блюда последних 4 недель — максимально избегать повторений
 
 ### Обязательная проверка для Сергея:
@@ -286,6 +310,58 @@ UPDATE menu_dishes SET liked = 1
 WHERE dish_name LIKE '%НАЗВАНИЕ%';
 "
 ```
+
+---
+
+## КОМАНДЫ для food_rules (правила питания)
+
+**«[блюдо/ингредиент] надоело на месяц»:**
+```bash
+sqlite3 history/menu_history.db "
+INSERT INTO food_rules (category, name, person, rating, note, valid_until, source)
+VALUES ('ingredient', 'НАЗВАНИЕ', 'оба', -1, 'надоело', date('now','+30 days'), 'user')
+ON CONFLICT DO NOTHING;
+"
+```
+(если правило уже есть — UPDATE rating и valid_until)
+
+**«[блюдо] — огонь / топ»:**
+```bash
+sqlite3 history/menu_history.db "
+INSERT INTO food_rules (category, name, person, rating, note, source)
+VALUES ('dish', 'НАЗВАНИЕ', 'оба', 2, 'топ — повторять чаще', 'user');
+"
+```
+
+**«[блюдо] нравится» (просто в ротации):**
+```bash
+sqlite3 history/menu_history.db "
+INSERT INTO food_rules (category, name, person, rating, note, source)
+VALUES ('dish', 'НАЗВАНИЕ', 'оба', 1, 'нравится', 'user');
+"
+```
+
+**«Снимай надоело с [блюда]» / «уже не надоело»:**
+```bash
+sqlite3 history/menu_history.db "
+UPDATE food_rules
+SET rating = 0, valid_until = NULL, updated_at = datetime('now')
+WHERE name LIKE '%НАЗВАНИЕ%' AND source = 'user';
+"
+```
+
+**«Покажи активные правила»:**
+```bash
+sqlite3 history/menu_history.db "
+SELECT category, name, person, rating, note,
+       COALESCE(valid_until, 'бессрочно') AS valid
+FROM food_rules
+WHERE valid_until IS NULL OR valid_until >= date('now')
+ORDER BY rating ASC, person, name;
+"
+```
+
+---
 
 **«Покажи динамику веса»:**
 ```bash

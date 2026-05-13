@@ -17,16 +17,50 @@
 | `rules/sergey_diet.md` | Медицинские ограничения + разрешённые продукты |
 | `rules/elvira_diet.md` | Нормы тренера (1700 ккал, БЖУ) |
 | `equipment/equipment.md` | Доступная техника и методы готовки |
-| `history/menu_history.db` | SQLite: история блюд + оценки + вес |
+| `history/menu_history.db` | SQLite: история блюд + оценки + вес + **`food_rules`** |
 
 ## Главный скилл
 
 `/make-menu` — генерирует полное недельное меню. Запускай через `Skill tool`.
 
-## Правила работы с БД
+## ⚠️ ОБЯЗАТЕЛЬНО — таблица `food_rules` (единый источник правил «нравится/надоело/нельзя»)
+
+**Перед любой генерацией или модификацией меню — вычитай активные правила из `food_rules`.** Это первоисточник, который пополняется по обратной связи пользователя.
 
 ```bash
-# Проверить блюда, которые не понравились
+sqlite3 history/menu_history.db "
+SELECT category, name, person, rating, note, COALESCE(valid_until, 'бессрочно') AS valid
+FROM food_rules
+WHERE valid_until IS NULL OR valid_until >= date('now')
+ORDER BY rating ASC, person, name;
+"
+```
+
+**Семантика `rating`:**
+- `-2` — медицинский / жёсткий запрет → **НИКОГДА не предлагать** (учитывай `person`: 'Сергей' — только в его меню, 'оба' — у обоих)
+- `-1` — временно надоело → не предлагать, пока `valid_until >= today`
+- `+1` — нравится → в обычной ротации
+- `+2` — топ → **повторять каждые 2–3 недели**, держать в ротации
+- `category='cooking_method'` с rating ≥ 1 — это инструкция по способу готовки (например, «тефтели: 200°C/40 мин строго»)
+
+**Команды для пополнения** (используй когда пользователь так говорит):
+
+| Пользователь | SQL |
+|---|---|
+| «X надоело на месяц» | `INSERT INTO food_rules (category, name, person, rating, note, valid_until, source) VALUES (...,-1,...,date('now','+30 days'),'user');` |
+| «X — огонь» | `INSERT … rating=2 …` |
+| «X нравится» | `INSERT … rating=1 …` |
+| «снимай надоело с X» | `UPDATE food_rules SET rating=0, valid_until=NULL WHERE name LIKE '%X%' AND source='user';` |
+| «покажи правила» | `SELECT … WHERE valid_until IS NULL OR valid_until >= date('now') …` |
+
+Полные команды — в `.claude/skills/make-menu/SKILL.md` (раздел «КОМАНДЫ для food_rules»).
+
+**Дубль с `rules/sergey_diet.md`:** медицинские запреты Сергея есть и там, и в БД (`source='medical'`). md — для людей, БД — для скилла. При изменении правил диетолога — обновляй оба места.
+
+## Правила работы с БД (краткая шпаргалка)
+
+```bash
+# Проверить блюда, которые не понравились (per-приём пищи трекер)
 sqlite3 history/menu_history.db "SELECT DISTINCT dish_name FROM menu_dishes WHERE liked=0;"
 
 # Посмотреть последние недели
@@ -34,6 +68,9 @@ sqlite3 history/menu_history.db "SELECT week_start, days_label, kcal_sergey FROM
 
 # Динамика веса
 sqlite3 history/menu_history.db "SELECT person, weight_kg, recorded_at FROM weight_history ORDER BY person, recorded_at;"
+
+# Активные правила питания
+sqlite3 history/menu_history.db "SELECT * FROM food_rules WHERE valid_until IS NULL OR valid_until >= date('now') ORDER BY rating ASC;"
 ```
 
 ## Когда пользователь говорит «обновить вес»
