@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Рацион: Понедельник – Воскресенье (18–24 мая)</title>
+<link rel="manifest" href="/health_food/manifest.json">
+<meta name="theme-color" content="#0f1210">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Рацион">
+<link rel="apple-touch-icon" href="/health_food/icons/icon-180.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1210; --surface: #181e19; --card: #1e2720; --card-back: #243020;
+    --border: #2e3d2e; --accent: #7fb069; --accent2: #d4956a; --accent3: #5b8fa8; --accent4: #a07fc4;
+    --text: #e8ede6; --text-muted: #7a9175; --text-dim: #4a5e48;
+    --tag-bg: #263326; --kcal: #d4956a; --shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; padding: 0 0 60px; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 20px 24px 0; font-size: 13px; color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+  .back-link:hover { color: var(--accent); }
+  header { padding: 16px 24px 0; text-align: center; position: relative; }
+  header::after { content: ''; display: block; width: 60px; height: 2px; background: var(--accent); margin: 14px auto 0; border-radius: 2px; }
+  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(22px, 5vw, 34px); font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+  header p { margin-top: 6px; color: var(--text-muted); font-size: 13px; font-weight: 300; letter-spacing: 0.5px; }
+  nav { display: flex; justify-content: center; gap: 6px; padding: 28px 20px 0; flex-wrap: wrap; }
+  .nav-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); padding: 9px 20px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; }
+  .nav-btn.active { background: var(--accent); border-color: var(--accent); color: #0f1210; }
+  .nav-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+  .section { display: none; padding: 28px 16px 0; max-width: 1100px; margin: 0 auto; }
+  .section.active { display: block; }
+  .person-switch { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+  .person-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); padding: 7px 20px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+  .person-btn[data-person="sergey"].active { background: var(--accent3); border-color: var(--accent3); color: #fff; }
+  .person-btn[data-person="elvira"].active { background: var(--accent4); border-color: var(--accent4); color: #fff; }
+  .person-btn:hover:not(.active) { border-color: var(--text-muted); color: var(--text); }
+  .days-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
+  @media (max-width: 700px) { .days-grid { grid-template-columns: 1fr; } }
+  .day-label { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--accent); text-align: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); letter-spacing: 0.5px; }
+  .day-kcal-total { font-size: 11px; color: var(--text-dim); display: block; margin-top: 3px; font-weight: 400; }
+  .flip-wrap { margin-bottom: 10px; cursor: pointer; }
+  .flip-inner { position: relative; width: 100%; }
+  .card-front { width: 100%; border-radius: 14px; padding: 14px 16px; border: 1px solid var(--border); background: var(--card); position: relative; transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s; }
+  .card-back { display: none; }
+  .flip-wrap:hover .card-front { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent)22; }
+  .flip-wrap:active .card-front { transform: scale(0.98); }
+  #card-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+  #card-modal.active { display: flex; }
+  #card-modal-inner { background: var(--card-back); border: 1px solid var(--border); border-radius: 16px; padding: 20px 20px 16px; width: min(360px, 100%); max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 24px 64px rgba(0,0,0,0.6); animation: modalIn 0.2s ease; }
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.92) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .modal-close { position: absolute; top: 10px; right: 12px; font-size: 16px; cursor: pointer; color: var(--text-muted); background: none; border: none; line-height: 1; padding: 4px; transition: color 0.15s; }
+  .modal-close:hover { color: var(--text); }
+  .meal-type { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .meal-type-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .dot-breakfast { background: #f4c87a; }
+  .dot-snack { background: #7fb069; }
+  .dot-lunch { background: #d4956a; }
+  .dot-aftersnack { background: #5b8fa8; }
+  .dot-dinner { background: #a07fc4; }
+  .dot-cheat { background: #e07a5f; }
+  .meal-title { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.4; margin-bottom: 8px; }
+  .meal-kcal { display: inline-block; font-size: 12px; font-weight: 500; color: var(--kcal); background: #2d1e0e; border: 1px solid #4a2e10; padding: 2px 9px; border-radius: 100px; }
+  .flip-hint { position: absolute; bottom: 10px; right: 12px; font-size: 10px; color: var(--text-dim); display: flex; align-items: center; gap: 3px; }
+  .back-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px; font-weight: 500; }
+  .portion-row { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-bottom: 1px solid var(--border); gap: 8px; }
+  .portion-row:last-child { border-bottom: none; }
+  .portion-name { font-size: 12.5px; color: var(--text); font-weight: 400; flex: 1; }
+  .portion-amount { font-size: 12px; color: var(--accent); font-weight: 500; white-space: nowrap; }
+  .back-kcal { margin-top: 10px; text-align: right; font-size: 11px; color: var(--kcal); font-weight: 500; }
+  .recipe-divider { height: 1px; background: var(--border); margin: 12px 0 10px; }
+  .recipe-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 500; margin-bottom: 8px; }
+  .recipe-step { display: flex; gap: 10px; margin-bottom: 7px; align-items: flex-start; }
+  .recipe-num { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--tag-bg); border: 1px solid var(--accent); color: var(--accent); font-size: 10px; font-weight: 500; display: flex; align-items: center; justify-content: center; }
+  .recipe-text { font-size: 12.5px; line-height: 1.6; color: var(--text); padding-top: 1px; }
+  .recipe-note { font-size: 12px; color: var(--text-muted); font-style: italic; margin-top: 8px; line-height: 1.5; }
+  .info-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 28px; margin-bottom: 16px; }
+  .info-card h2 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); margin-bottom: 6px; }
+  .info-card .subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 22px; }
+  .shop-category { margin-bottom: 22px; }
+  .shop-category h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); font-weight: 500; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .shop-item { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; border-bottom: 1px solid #1e2720; }
+  .shop-item-name { font-size: 13.5px; color: var(--text); flex: 1; }
+  .shop-item-reason { font-size: 11px; color: var(--text-dim); margin-right: 12px; display: none; }
+  @media (min-width: 500px) { .shop-item-reason { display: block; } }
+  .shop-item-qty { font-size: 13px; font-weight: 500; color: var(--accent2); white-space: nowrap; }
+  .shop-block { margin-bottom: 28px; padding: 20px; border: 1px solid var(--border); border-radius: 14px; background: #161c17; }
+  .shop-block h2 { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--accent2); margin-bottom: 4px; }
+  .shop-block .shop-when { font-size: 11px; color: var(--text-muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+  .cook-block { margin-bottom: 30px; }
+  .cook-block h3 { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--accent2); margin-bottom: 4px; }
+  .cook-block .cook-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 14px; }
+  .cook-step { display: flex; gap: 14px; margin-bottom: 12px; align-items: flex-start; }
+  .step-num { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--tag-bg); border: 1px solid var(--accent); color: var(--accent); font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; }
+  .step-text { font-size: 13.5px; line-height: 1.6; color: var(--text); padding-top: 3px; }
+  .step-text strong { color: var(--accent2); font-weight: 500; }
+  .step-text em { color: var(--accent); font-style: normal; }
+  .tip-box { background: #1a2a20; border: 1px solid #2e4a30; border-radius: 10px; padding: 12px 16px; margin-top: 10px; font-size: 12.5px; color: var(--text-muted); line-height: 1.6; }
+  .tip-box::before { content: '💡 '; }
+  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+  .storage-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+  @media (max-width: 500px) { .storage-grid { grid-template-columns: 1fr; } }
+  .storage-item { background: var(--tag-bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .storage-item .s-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.8px; }
+  .storage-item .s-name { font-size: 13px; color: var(--text); font-weight: 500; margin-bottom: 3px; }
+  .storage-item .s-uses { font-size: 11.5px; color: var(--accent); }
+  body { padding-bottom: env(safe-area-inset-bottom, 16px); }
+  .back-link { padding-top: max(20px, calc(env(safe-area-inset-top) + 8px)); }
+  .day-col.today .day-label { color: var(--accent2); }
+  .today-badge { display: inline-block; font-size: 9px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #0f1210; background: var(--accent2); border-radius: 100px; padding: 2px 7px; margin-left: 6px; vertical-align: middle; }
+  .past-header { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); font-weight: 500; padding: 24px 0 12px; border-top: 1px solid var(--border); margin-top: 8px; grid-column: 1 / -1; }
+  .day-col.past .day-label { color: var(--text-dim); }
+  .day-col.past .card-front { opacity: 0.55; }
+  .day-col.cheatmeal .day-label { color: #e07a5f; border-bottom-color: #e07a5f; }
+  .cheat-banner { background: #2a1a14; border: 1px dashed #e07a5f; border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-size: 12px; color: #f0a890; line-height: 1.55; }
+  .cheat-banner strong { color: #ffb89a; }
+  #ptr { position: fixed; top: -76px; left: 50%; transform: translateX(-50%); width: 44px; height: 76px; z-index: 999; pointer-events: none; opacity: 0; }
+  #ptr.blooming { animation: sprout-bloom 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+  @keyframes sprout-bloom {
+    0% { transform: translateX(-50%) scale(1) rotate(0deg); opacity: 1; }
+    45% { transform: translateX(-50%) scale(1.45) rotate(14deg); opacity: 1; }
+    100% { transform: translateX(-50%) scale(0.15) rotate(50deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<a class="back-link" href="../../index.html">← Все меню</a>
+<header>
+  <h1>Рацион Понедельник — Воскресенье</h1>
+  <p>18–24 мая 2026 · одно меню на двоих · Вс — читмил-день · нажми карточку для порций</p>
+</header>
+
+<nav>
+  <button class="nav-btn active" onclick="showSection('days')">📅 Дни</button>
+  <button class="nav-btn" onclick="showSection('shop')">🛒 Покупки</button>
+  <button class="nav-btn" onclick="showSection('cook')">🍳 Готовка</button>
+</nav>
+
+<section class="section active" id="days">
+
+  <div class="person-switch">
+    <button class="person-btn active" data-person="sergey" onclick="showPerson('sergey', this)">👤 Сергей ~2180 ккал</button>
+    <button class="person-btn" data-person="elvira" onclick="showPerson('elvira', this)">👤 Эльвира ~1700 ккал</button>
+  </div>
+
+  <div class="days-grid">
+
+    <!-- ══ ПОНЕДЕЛЬНИК 18 МАЯ ══ -->
+    <div class="day-col" data-date="2026-05-18">
+      <div class="day-label">
+        Понедельник, 18 мая
+        <span class="day-kcal-total kcal-sergey">~2155 ккал</span>
+        <span class="day-kcal-total kcal-elvira" style="display:none">~1695 ккал</span>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-breakfast"></span>Завтрак</div>
+            <div class="meal-title">Гречка на молоке с тёртым яблоком и миндалём</div>
+            <span class="meal-kcal" data-sergey="465 ккал" data-elvira="380 ккал">465 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Гречка варёная (заготовка)</span><span class="portion-amount" data-sergey="170 г" data-elvira="130 г">170 г</span></div>
+            <div class="portion-row"><span class="portion-name">Молоко 1,5–2% (горячее)</span><span class="portion-amount" data-sergey="130 мл" data-elvira="100 мл">130 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Яблоко (тёртое)</span><span class="portion-amount" data-sergey="1 шт (~150 г)" data-elvira="1 шт (~130 г)">1 шт (~150 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Миндаль (рубленый)</span><span class="portion-amount" data-sergey="15 г" data-elvira="10 г">15 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 465 ккал" data-elvira="≈ 380 ккал">≈ 465 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Как подать</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text">Гречку из контейнера разогреть в микроволновке 2 мин с 1 ч.л. воды.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text">Молоко нагреть (не кипятить), залить кашу. Сверху тёртое яблоко и рубленый миндаль.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-snack"></span>Перекус</div>
+            <div class="meal-title">Йогурт + банан + грецкий орех</div>
+            <span class="meal-kcal" data-sergey="295 ккал" data-elvira="240 ккал">295 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Йогурт натуральный ≤3%</span><span class="portion-amount" data-sergey="150 г" data-elvira="150 г">150 г</span></div>
+            <div class="portion-row"><span class="portion-name">Банан</span><span class="portion-amount" data-sergey="1 шт (~120 г)" data-elvira="1 небольшой (~100 г)">1 шт (~120 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Грецкий орех</span><span class="portion-amount" data-sergey="15 г" data-elvira="10 г">15 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 295 ккал" data-elvira="≈ 240 ккал">≈ 295 ккал</div>
+            <div class="recipe-note">Банан нарезать, перемешать с йогуртом, сверху орех.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-lunch"></span>Обед</div>
+            <div class="meal-title">Суп-пюре из тыквы + булгур + куриный гуляш</div>
+            <span class="meal-kcal" data-sergey="580 ккал" data-elvira="490 ккал">580 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Суп-пюре из тыквы с морковью</span><span class="portion-amount" data-sergey="300 мл" data-elvira="250 мл">300 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Булгур варёный</span><span class="portion-amount" data-sergey="150 г" data-elvira="130 г">150 г</span></div>
+            <div class="portion-row"><span class="portion-name">Куриный гуляш (с овощами в соусе)</span><span class="portion-amount" data-sergey="150 г" data-elvira="130 г">150 г</span></div>
+            <div class="portion-row"><span class="portion-name">Зелень (укроп / петрушка)</span><span class="portion-amount" data-sergey="5 г" data-elvira="5 г">5 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 580 ккал" data-elvira="≈ 490 ккал">≈ 580 ккал</div>
+            <div class="recipe-note">Всё из контейнеров. Суп — кастрюлька на плите 5 мин. Гуляш + булгур — микроволновка 3 мин под крышкой. Зелень — в тарелку.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-aftersnack"></span>Полдник</div>
+            <div class="meal-title">Творог + груша + хлебцы</div>
+            <span class="meal-kcal" data-sergey="290 ккал" data-elvira="220 ккал">290 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Творог 5%</span><span class="portion-amount" data-sergey="120 г" data-elvira="100 г">120 г</span></div>
+            <div class="portion-row"><span class="portion-name">Груша</span><span class="portion-amount" data-sergey="1 шт (~150 г)" data-elvira="1 шт (~130 г)">1 шт (~150 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Хлебцы цельнозерновые</span><span class="portion-amount" data-sergey="2 шт (~20 г)" data-elvira="—">2 шт (~20 г)</span></div>
+            <div class="back-kcal" data-sergey="≈ 290 ккал" data-elvira="≈ 220 ккал">≈ 290 ккал</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-dinner"></span>Ужин</div>
+            <div class="meal-title">Куриный гуляш + тушёная капуста с морковью + булгур</div>
+            <span class="meal-kcal" data-sergey="525 ккал" data-elvira="365 ккал">525 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Куриный гуляш</span><span class="portion-amount" data-sergey="120 г" data-elvira="100 г">120 г</span></div>
+            <div class="portion-row"><span class="portion-name">Тушёная капуста с морковью</span><span class="portion-amount" data-sergey="200 г" data-elvira="180 г">200 г</span></div>
+            <div class="portion-row"><span class="portion-name">Булгур варёный</span><span class="portion-amount" data-sergey="130 г" data-elvira="80 г">130 г</span></div>
+            <div class="portion-row"><span class="portion-name">Петрушка</span><span class="portion-amount" data-sergey="5 г" data-elvira="5 г">5 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 525 ккал" data-elvira="≈ 365 ккал">≈ 525 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Тушёная капуста (свежая)</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text">Гуляш и булгур — микроволновка 3 мин под крышкой.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text"><b>Капуста на двоих:</b> ~700 г сырой белокочанной нашинковать тонко. Сковорода + 1 ч.л. масла → морковь натёртая (1 шт ~120 г) 3 мин → капуста + 6 ст.л. воды + щепотка соли. Крышка, <b>15 мин</b>, помешивать. В конце — петрушка.</div></div>
+            <div class="recipe-note">Капусту удобно сразу сделать на 2 ужина (Пн+Ср если захочется): 1,2 кг сырой → ~660 г готовой.</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /пн -->
+
+    <!-- ══ ВТОРНИК 19 МАЯ ══ -->
+    <div class="day-col" data-date="2026-05-19">
+      <div class="day-label">
+        Вторник, 19 мая
+        <span class="day-kcal-total kcal-sergey">~2200 ккал</span>
+        <span class="day-kcal-total kcal-elvira" style="display:none">~1705 ккал</span>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-breakfast"></span>Завтрак</div>
+            <div class="meal-title">Омлет со шпинатом и помидором + цельнозерновой хлеб</div>
+            <span class="meal-kcal" data-sergey="470 ккал" data-elvira="410 ккал">470 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Яйца куриные</span><span class="portion-amount" data-sergey="2 шт" data-elvira="2 шт">2 шт</span></div>
+            <div class="portion-row"><span class="portion-name">Молоко 1,5–2%</span><span class="portion-amount" data-sergey="50 мл" data-elvira="50 мл">50 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Шпинат свежий</span><span class="portion-amount" data-sergey="50 г" data-elvira="50 г">50 г</span></div>
+            <div class="portion-row"><span class="portion-name">Помидор свежий</span><span class="portion-amount" data-sergey="1 шт (~120 г)" data-elvira="1 шт (~120 г)">1 шт (~120 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Огурец свежий</span><span class="portion-amount" data-sergey="100 г" data-elvira="100 г">100 г</span></div>
+            <div class="portion-row"><span class="portion-name">Хлеб цельнозерновой</span><span class="portion-amount" data-sergey="1 кусок (~40 г)" data-elvira="1 кусок (~40 г)">1 кусок (~40 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Масло оливковое</span><span class="portion-amount" data-sergey="3 г" data-elvira="3 г">3 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 470 ккал" data-elvira="≈ 410 ккал">≈ 470 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Омлет со шпинатом</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text">Помидоры (на двоих ~2 шт) нарезать кубиком, шпинат (~100 г) крупно порвать. Сковорода + капля масла → помидоры на средний огонь 2 мин → шпинат 1 мин (он сразу опадёт).</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text">Яйца (на двоих 4 шт) взбить с молоком (100 мл) и щепоткой соли. Залить помидоры со шпинатом. Огонь ниже среднего, крышка, <b>5–6 мин</b>.</div></div>
+            <div class="recipe-step"><div class="recipe-num">3</div><div class="recipe-text">Огурец нарезать, подать с хлебом.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-snack"></span>Перекус</div>
+            <div class="meal-title">Кефир + хлебцы + миндаль</div>
+            <span class="meal-kcal" data-sergey="240 ккал" data-elvira="200 ккал">240 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Кефир 2,5%</span><span class="portion-amount" data-sergey="200 мл" data-elvira="200 мл">200 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Хлебцы цельнозерновые</span><span class="portion-amount" data-sergey="3 шт (~30 г)" data-elvira="2 шт (~20 г)">3 шт (~30 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Миндаль</span><span class="portion-amount" data-sergey="15 г" data-elvira="10 г">15 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 240 ккал" data-elvira="≈ 200 ккал">≈ 240 ккал</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-lunch"></span>Обед</div>
+            <div class="meal-title">Суп-пюре из тыквы + гречка + куриный гуляш</div>
+            <span class="meal-kcal" data-sergey="565 ккал" data-elvira="475 ккал">565 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Суп-пюре из тыквы</span><span class="portion-amount" data-sergey="300 мл" data-elvira="250 мл">300 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Гречка варёная</span><span class="portion-amount" data-sergey="150 г" data-elvira="130 г">150 г</span></div>
+            <div class="portion-row"><span class="portion-name">Куриный гуляш</span><span class="portion-amount" data-sergey="150 г" data-elvira="130 г">150 г</span></div>
+            <div class="portion-row"><span class="portion-name">Зелень</span><span class="portion-amount" data-sergey="5 г" data-elvira="5 г">5 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 565 ккал" data-elvira="≈ 475 ккал">≈ 565 ккал</div>
+            <div class="recipe-note">Всё разогреть. Суп — кастрюлька, гарнир + белок — микроволновка.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-aftersnack"></span>Полдник</div>
+            <div class="meal-title">Йогурт + яблоко</div>
+            <span class="meal-kcal" data-sergey="200 ккал" data-elvira="175 ккал">200 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Йогурт натуральный ≤3%</span><span class="portion-amount" data-sergey="150 г" data-elvira="130 г">150 г</span></div>
+            <div class="portion-row"><span class="portion-name">Яблоко</span><span class="portion-amount" data-sergey="1 шт (~180 г)" data-elvira="1 шт (~150 г)">1 шт (~180 г)</span></div>
+            <div class="back-kcal" data-sergey="≈ 200 ккал" data-elvira="≈ 175 ккал">≈ 200 ккал</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-dinner"></span>Ужин</div>
+            <div class="meal-title">Стейк индейки на Optigrill + брокколи на пару + гречка + салат</div>
+            <span class="meal-kcal" data-sergey="725 ккал" data-elvira="445 ккал">725 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Филе индейки (сырое → готовое ×0.65)</span><span class="portion-amount" data-sergey="180 г сырого → 120 г" data-elvira="150 г сырого → 100 г">180 г сырого → 120 г</span></div>
+            <div class="portion-row"><span class="portion-name">Брокколи на пару</span><span class="portion-amount" data-sergey="200 г" data-elvira="200 г">200 г</span></div>
+            <div class="portion-row"><span class="portion-name">Гречка варёная</span><span class="portion-amount" data-sergey="150 г" data-elvira="80 г">150 г</span></div>
+            <div class="portion-row"><span class="portion-name">Свежий салат (огурец + помидор + зелень)</span><span class="portion-amount" data-sergey="200 г" data-elvira="200 г">200 г</span></div>
+            <div class="portion-row"><span class="portion-name">Оливковое масло (на салат)</span><span class="portion-amount" data-sergey="5 г" data-elvira="3 г">5 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 725 ккал" data-elvira="≈ 445 ккал">≈ 725 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Стейк индейки + брокколи</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text"><strong>Индейка на двоих ~330 г сырой</strong>: натереть смесью — щепотка соли, паприка, прованские травы, ½ ч.л. оливкового масла. Дать постоять 5 мин.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text">Optigrill → программа «птица» или ручной режим средний, <b>~7–8 мин</b> до сигнала. Дать «отдохнуть» 3 мин.</div></div>
+            <div class="recipe-step"><div class="recipe-num">3</div><div class="recipe-text"><strong>Брокколи на двоих ~400 г</strong>: разобрать на соцветия, в Turbo Cuisine «пар» или дуршлаг над кипящей водой, <b>5–7 мин</b>.</div></div>
+            <div class="recipe-step"><div class="recipe-num">4</div><div class="recipe-text">Гречку разогреть, салат собрать из свежих овощей, заправить маслом.</div></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /вт -->
+
+    <!-- ══ СРЕДА 20 МАЯ ══ -->
+    <div class="day-col" data-date="2026-05-20">
+      <div class="day-label">
+        Среда, 20 мая
+        <span class="day-kcal-total kcal-sergey">~2200 ккал</span>
+        <span class="day-kcal-total kcal-elvira" style="display:none">~1700 ккал</span>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-breakfast"></span>Завтрак</div>
+            <div class="meal-title">Овсянка на молоке с черникой и кэробом</div>
+            <span class="meal-kcal" data-sergey="445 ккал" data-elvira="380 ккал">445 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Овсяные хлопья (долгой варки)</span><span class="portion-amount" data-sergey="60 г" data-elvira="50 г">60 г</span></div>
+            <div class="portion-row"><span class="portion-name">Молоко 1,5–2%</span><span class="portion-amount" data-sergey="150 мл" data-elvira="120 мл">150 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Вода</span><span class="portion-amount" data-sergey="100 мл" data-elvira="100 мл">100 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Черника свежая/мороженая</span><span class="portion-amount" data-sergey="60 г" data-elvira="50 г">60 г</span></div>
+            <div class="portion-row"><span class="portion-name">Кэроб (порошок)</span><span class="portion-amount" data-sergey="1 ч.л." data-elvira="1 ч.л.">1 ч.л.</span></div>
+            <div class="portion-row"><span class="portion-name">Миндаль</span><span class="portion-amount" data-sergey="10 г" data-elvira="—">10 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 445 ккал" data-elvira="≈ 380 ккал">≈ 445 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Овсянка</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text"><strong>На двоих:</strong> 110 г хлопьев + 270 мл молока + 200 мл воды + щепотка соли. Кастрюля, средний огонь, помешивать <b>5–7 мин</b>.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text">В тарелку — кэроб (вместо какао), сверху чернику и орех.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-snack"></span>Перекус</div>
+            <div class="meal-title">Творог + банан</div>
+            <span class="meal-kcal" data-sergey="245 ккал" data-elvira="220 ккал">245 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Творог 5%</span><span class="portion-amount" data-sergey="120 г" data-elvira="120 г">120 г</span></div>
+            <div class="portion-row"><span class="portion-name">Банан</span><span class="portion-amount" data-sergey="1 шт (~120 г)" data-elvira="1 шт (~100 г)">1 шт (~120 г)</span></div>
+            <div class="back-kcal" data-sergey="≈ 245 ккал" data-elvira="≈ 220 ккал">≈ 245 ккал</div>
+            <div class="recipe-note">Творог растолочь вилкой с бананом — пастообразно.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-lunch"></span>Обед</div>
+            <div class="meal-title">Суп-пюре из тыквы + булгур + куриный гуляш</div>
+            <span class="meal-kcal" data-sergey="580 ккал" data-elvira="490 ккал">580 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Суп-пюре из тыквы</span><span class="portion-amount" data-sergey="300 мл" data-elvira="250 мл">300 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Булгур варёный</span><span class="portion-amount" data-sergey="150 г" data-elvira="130 г">150 г</span></div>
+            <div class="portion-row"><span class="portion-name">Куриный гуляш (доедаем!)</span><span class="portion-amount" data-sergey="150 г" data-elvira="130 г">150 г</span></div>
+            <div class="portion-row"><span class="portion-name">Зелень</span><span class="portion-amount" data-sergey="5 г" data-elvira="5 г">5 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 580 ккал" data-elvira="≈ 490 ккал">≈ 580 ккал</div>
+            <div class="recipe-note">Финальный обед на заготовках первой готовки — холодильник освобождается под Готовку 2 (вечер ср).</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-aftersnack"></span>Полдник</div>
+            <div class="meal-title">Кефир + груша + хлебцы</div>
+            <span class="meal-kcal" data-sergey="230 ккал" data-elvira="195 ккал">230 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Кефир 2,5%</span><span class="portion-amount" data-sergey="200 мл" data-elvira="200 мл">200 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Груша</span><span class="portion-amount" data-sergey="1 шт (~150 г)" data-elvira="1 шт (~130 г)">1 шт (~150 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Хлебцы цельнозерновые</span><span class="portion-amount" data-sergey="2 шт (~20 г)" data-elvira="1 шт (~10 г)">2 шт (~20 г)</span></div>
+            <div class="back-kcal" data-sergey="≈ 230 ккал" data-elvira="≈ 195 ккал">≈ 230 ккал</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-dinner"></span>Ужин</div>
+            <div class="meal-title">Котлеты из индейки запечённые ⭐ + тушёная свёкла с морковью + киноа</div>
+            <span class="meal-kcal" data-sergey="700 ккал" data-elvira="455 ккал">700 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Котлеты индейки запечённые</span><span class="portion-amount" data-sergey="2 шт (~100 г)" data-elvira="2 шт (~100 г)">2 шт (~100 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Тушёная свёкла с морковью</span><span class="portion-amount" data-sergey="200 г" data-elvira="180 г">200 г</span></div>
+            <div class="portion-row"><span class="portion-name">Киноа варёная</span><span class="portion-amount" data-sergey="150 г" data-elvira="80 г">150 г</span></div>
+            <div class="portion-row"><span class="portion-name">Петрушка</span><span class="portion-amount" data-sergey="5 г" data-elvira="5 г">5 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 700 ккал" data-elvira="≈ 455 ккал">≈ 700 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Свёкла с морковью (свежая)</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text">Котлеты + киноа — свежие из Готовки 2 (запускай готовку ~17:30, к 19:00 ужин готов).</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text"><strong>Свёкла на двоих ~450 г сырой</strong> (×0.85 → ~380 г готовой → берём с запасом): свёкла 1 средняя + морковь 1 крупная — натереть на крупной тёрке. Сковорода + 1 ч.л. масла → морковь 3 мин → свёкла + 5 ст.л. воды + щепотка соли + ½ ч.л. сиропа топинамбура. Крышка, <b>15–18 мин</b>, помешивать. В конце — петрушка.</div></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /ср -->
+
+    <!-- ══ ЧЕТВЕРГ 21 МАЯ ══ -->
+    <div class="day-col" data-date="2026-05-21">
+      <div class="day-label">
+        Четверг, 21 мая
+        <span class="day-kcal-total kcal-sergey">~2210 ккал</span>
+        <span class="day-kcal-total kcal-elvira" style="display:none">~1710 ккал</span>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-breakfast"></span>Завтрак</div>
+            <div class="meal-title">Сырники запечённые с яблоком</div>
+            <span class="meal-kcal" data-sergey="450 ккал" data-elvira="395 ккал">450 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Сырники запечённые (заготовка)</span><span class="portion-amount" data-sergey="4 шт (~200 г)" data-elvira="3 шт (~150 г)">4 шт (~200 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Яблоко</span><span class="portion-amount" data-sergey="1 шт (~150 г)" data-elvira="1 шт (~150 г)">1 шт (~150 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Сметана 15% (Сергею ≤15 г)</span><span class="portion-amount" data-sergey="1 ст.л. (15 г)" data-elvira="1 ст.л. (15 г)">1 ст.л. (15 г)</span></div>
+            <div class="back-kcal" data-sergey="≈ 450 ккал" data-elvira="≈ 395 ккал">≈ 450 ккал</div>
+            <div class="recipe-note">Сырники разогреть в духовке 5 мин при 150°C или в микроволновке 30 сек.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-snack"></span>Перекус</div>
+            <div class="meal-title">Йогурт + груша</div>
+            <span class="meal-kcal" data-sergey="205 ккал" data-elvira="180 ккал">205 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Йогурт натуральный ≤3%</span><span class="portion-amount" data-sergey="150 г" data-elvira="130 г">150 г</span></div>
+            <div class="portion-row"><span class="portion-name">Груша</span><span class="portion-amount" data-sergey="1 шт (~150 г)" data-elvira="1 шт (~130 г)">1 шт (~150 г)</span></div>
+            <div class="back-kcal" data-sergey="≈ 205 ккал" data-elvira="≈ 180 ккал">≈ 205 ккал</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-lunch"></span>Обед</div>
+            <div class="meal-title">Уха из трески + киноа + котлеты из индейки</div>
+            <span class="meal-kcal" data-sergey="615 ккал" data-elvira="510 ккал">615 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Уха из трески (бульон + рыба + картофель + морковь)</span><span class="portion-amount" data-sergey="400 мл" data-elvira="300 мл">400 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Киноа варёная</span><span class="portion-amount" data-sergey="130 г" data-elvira="100 г">130 г</span></div>
+            <div class="portion-row"><span class="portion-name">Котлеты индейки</span><span class="portion-amount" data-sergey="2 шт (~100 г)" data-elvira="2 шт (~100 г)">2 шт (~100 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Зелень</span><span class="portion-amount" data-sergey="5 г" data-elvira="5 г">5 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 615 ккал" data-elvira="≈ 510 ккал">≈ 615 ккал</div>
+            <div class="recipe-note">Уха — лёгкий бульон по правилам Сергея (без острых специй, без лимона). Греть в кастрюле 5 мин.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-aftersnack"></span>Полдник</div>
+            <div class="meal-title">Творог с черникой</div>
+            <span class="meal-kcal" data-sergey="200 ккал" data-elvira="170 ккал">200 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Творог 5%</span><span class="portion-amount" data-sergey="120 г" data-elvira="100 г">120 г</span></div>
+            <div class="portion-row"><span class="portion-name">Черника</span><span class="portion-amount" data-sergey="80 г" data-elvira="80 г">80 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 200 ккал" data-elvira="≈ 170 ккал">≈ 200 ккал</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-dinner"></span>Ужин</div>
+            <div class="meal-title">Лосось гриль с травами + бурый рис + тушёный кабачок с морковью</div>
+            <span class="meal-kcal" data-sergey="740 ккал" data-elvira="455 ккал">740 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Лосось (сырой → готовый ×0.7)</span><span class="portion-amount" data-sergey="170 г сырого → 120 г" data-elvira="140 г сырого → 100 г">170 г сырого → 120 г</span></div>
+            <div class="portion-row"><span class="portion-name">Бурый рис варёный</span><span class="portion-amount" data-sergey="130 г" data-elvira="100 г">130 г</span></div>
+            <div class="portion-row"><span class="portion-name">Кабачок тушёный с морковью</span><span class="portion-amount" data-sergey="220 г" data-elvira="200 г">220 г</span></div>
+            <div class="portion-row"><span class="portion-name">Петрушка / укроп</span><span class="portion-amount" data-sergey="5 г" data-elvira="5 г">5 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 740 ккал" data-elvira="≈ 455 ккал">≈ 740 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Лосось + кабачок (свежее)</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text"><strong>Лосось на двоих ~310 г сырого</strong>: натереть смесью — щепотка соли, прованские травы, укроп. <em>Без лимона</em> (запрет Сергея). Optigrill → программа «рыба», <b>6–8 мин</b> до сигнала.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text"><strong>Кабачок + морковь на двоих:</strong> ~400 г сырого кабачка + 1 морковь — нарезать. Сковорода + 1 ч.л. масла → морковь 3 мин → кабачок + 4 ст.л. воды + соль. Крышка, <b>10 мин</b>. В конце — зелень.</div></div>
+            <div class="recipe-step"><div class="recipe-num">3</div><div class="recipe-text">Бурый рис разогреть.</div></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /чт -->
+
+    <!-- ══ ПЯТНИЦА 22 МАЯ ══ -->
+    <div class="day-col" data-date="2026-05-22">
+      <div class="day-label">
+        Пятница, 22 мая
+        <span class="day-kcal-total kcal-sergey">~2185 ккал</span>
+        <span class="day-kcal-total kcal-elvira" style="display:none">~1695 ккал</span>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-breakfast"></span>Завтрак</div>
+            <div class="meal-title">Пшённая каша на молоке с тёртой грушей и грецким орехом</div>
+            <span class="meal-kcal" data-sergey="455 ккал" data-elvira="395 ккал">455 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Пшено варёное (заготовка)</span><span class="portion-amount" data-sergey="170 г" data-elvira="140 г">170 г</span></div>
+            <div class="portion-row"><span class="portion-name">Молоко 1,5–2% (горячее)</span><span class="portion-amount" data-sergey="130 мл" data-elvira="100 мл">130 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Груша (тёртая)</span><span class="portion-amount" data-sergey="1 шт (~150 г)" data-elvira="1 шт (~130 г)">1 шт (~150 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Грецкий орех</span><span class="portion-amount" data-sergey="15 г" data-elvira="10 г">15 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 455 ккал" data-elvira="≈ 395 ккал">≈ 455 ккал</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-snack"></span>Перекус</div>
+            <div class="meal-title">Кефир + яблоко + хлебцы</div>
+            <span class="meal-kcal" data-sergey="220 ккал" data-elvira="195 ккал">220 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Кефир 2,5%</span><span class="portion-amount" data-sergey="200 мл" data-elvira="200 мл">200 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Яблоко</span><span class="portion-amount" data-sergey="1 шт (~150 г)" data-elvira="1 шт (~130 г)">1 шт (~150 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Хлебцы цельнозерновые</span><span class="portion-amount" data-sergey="2 шт (~20 г)" data-elvira="1 шт (~10 г)">2 шт (~20 г)</span></div>
+            <div class="back-kcal" data-sergey="≈ 220 ккал" data-elvira="≈ 195 ккал">≈ 220 ккал</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-lunch"></span>Обед</div>
+            <div class="meal-title">Уха из трески + бурый рис + котлеты из индейки</div>
+            <span class="meal-kcal" data-sergey="620 ккал" data-elvira="515 ккал">620 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Уха из трески</span><span class="portion-amount" data-sergey="400 мл" data-elvira="300 мл">400 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Бурый рис варёный</span><span class="portion-amount" data-sergey="130 г" data-elvira="100 г">130 г</span></div>
+            <div class="portion-row"><span class="portion-name">Котлеты индейки</span><span class="portion-amount" data-sergey="2 шт (~100 г)" data-elvira="2 шт (~100 г)">2 шт (~100 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Зелень</span><span class="portion-amount" data-sergey="5 г" data-elvira="5 г">5 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 620 ккал" data-elvira="≈ 515 ккал">≈ 620 ккал</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-aftersnack"></span>Полдник</div>
+            <div class="meal-title">Йогурт + банан</div>
+            <span class="meal-kcal" data-sergey="220 ккал" data-elvira="195 ккал">220 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Йогурт натуральный ≤3%</span><span class="portion-amount" data-sergey="150 г" data-elvira="130 г">150 г</span></div>
+            <div class="portion-row"><span class="portion-name">Банан</span><span class="portion-amount" data-sergey="1 шт (~120 г)" data-elvira="1 шт (~110 г)">1 шт (~120 г)</span></div>
+            <div class="back-kcal" data-sergey="≈ 220 ккал" data-elvira="≈ 195 ккал">≈ 220 ккал</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-dinner"></span>Ужин</div>
+            <div class="meal-title">Паста из твёрдых сортов с курицей и томатами + свежий салат</div>
+            <span class="meal-kcal" data-sergey="670 ккал" data-elvira="395 ккал">670 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Паста твёрдых сортов (сухая → варёная ×2.5)</span><span class="portion-amount" data-sergey="80 г сухой → 200 г" data-elvira="50 г сухой → 125 г">80 г сухой → 200 г</span></div>
+            <div class="portion-row"><span class="portion-name">Куриное филе (сырое → готовое ×0.6)</span><span class="portion-amount" data-sergey="180 г сырого → 110 г" data-elvira="150 г сырого → 90 г">180 г сырого → 110 г</span></div>
+            <div class="portion-row"><span class="portion-name">Томатный соус (помидоры + базилик)</span><span class="portion-amount" data-sergey="120 г" data-elvira="100 г">120 г</span></div>
+            <div class="portion-row"><span class="portion-name">Свежий салат (огурец, помидор, зелень)</span><span class="portion-amount" data-sergey="200 г" data-elvira="200 г">200 г</span></div>
+            <div class="portion-row"><span class="portion-name">Масло оливковое</span><span class="portion-amount" data-sergey="5 г" data-elvira="3 г">5 г</span></div>
+            <div class="portion-row"><span class="portion-name">Сыр тёртый ≤30%</span><span class="portion-amount" data-sergey="20 г" data-elvira="15 г">20 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 670 ккал" data-elvira="≈ 395 ккал">≈ 670 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Паста с курицей</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text"><strong>Курица на двоих ~330 г сырого:</strong> филе нарезать кусочками. Сковорода + 1 ч.л. масла → курица + щепотка соли + травы. Жарить <b>5–7 мин</b> до белого цвета.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text"><strong>Соус:</strong> 3 спелых помидора без кожи нарезать (или ~250 г пасатты) + 1 зубчик чеснока (тёртый). К курице, тушить <b>5–7 мин</b>, в конце — базилик/петрушка.</div></div>
+            <div class="recipe-step"><div class="recipe-num">3</div><div class="recipe-text"><strong>Паста на двоих 130 г сухой:</strong> в большой кастрюле подсолённой воды (1.5 л) варить «аль денте» (по упаковке, обычно 8–10 мин). Слить, к соусу с курицей, перемешать.</div></div>
+            <div class="recipe-step"><div class="recipe-num">4</div><div class="recipe-text">Подать с тёртым сыром и свежим салатом, заправленным оливковым маслом.</div></div>
+            <div class="recipe-note">⭐ Паста твёрдых сортов в food_rules → разрешена иногда вместо круп. Сергею 80 г сухой за раз.</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /пт -->
+
+    <!-- ══ СУББОТА 23 МАЯ ══ -->
+    <div class="day-col" data-date="2026-05-23">
+      <div class="day-label">
+        Суббота, 23 мая
+        <span class="day-kcal-total kcal-sergey">~2195 ккал</span>
+        <span class="day-kcal-total kcal-elvira" style="display:none">~1700 ккал</span>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-breakfast"></span>Завтрак</div>
+            <div class="meal-title">Яичница-болтунья с зеленью + авокадо + цельнозерновой тост</div>
+            <span class="meal-kcal" data-sergey="495 ккал" data-elvira="430 ккал">495 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Яйца куриные</span><span class="portion-amount" data-sergey="2 шт" data-elvira="2 шт">2 шт</span></div>
+            <div class="portion-row"><span class="portion-name">Молоко 1,5–2%</span><span class="portion-amount" data-sergey="30 мл" data-elvira="30 мл">30 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Зелень (укроп / зел. лук)</span><span class="portion-amount" data-sergey="15 г" data-elvira="15 г">15 г</span></div>
+            <div class="portion-row"><span class="portion-name">Авокадо</span><span class="portion-amount" data-sergey="50 г (¼ шт)" data-elvira="50 г (¼ шт)">50 г (¼ шт)</span></div>
+            <div class="portion-row"><span class="portion-name">Хлеб цельнозерновой (тост)</span><span class="portion-amount" data-sergey="1 кусок (~40 г)" data-elvira="1 кусок (~40 г)">1 кусок (~40 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Огурец / помидор</span><span class="portion-amount" data-sergey="100 г" data-elvira="100 г">100 г</span></div>
+            <div class="portion-row"><span class="portion-name">Масло оливковое</span><span class="portion-amount" data-sergey="3 г" data-elvira="3 г">3 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 495 ккал" data-elvira="≈ 430 ккал">≈ 495 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Болтунья + авокадо-тост</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text">Яйца (на двоих 4 шт) взбить вилкой с 60 мл молока + щепотка соли. Зелень мелко порубить, добавить.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text">Сковорода + капля масла, средний огонь. Залить, постоянно перемешивать лопаткой <b>2–3 мин</b> до мягкой кремовой текстуры. Снять заранее — доготовится от жара.</div></div>
+            <div class="recipe-step"><div class="recipe-num">3</div><div class="recipe-text">Хлеб подсушить в тостере. Авокадо ½ (на двоих) размять вилкой, намазать на тост.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-snack"></span>Перекус</div>
+            <div class="meal-title">Творог + банан</div>
+            <span class="meal-kcal" data-sergey="245 ккал" data-elvira="220 ккал">245 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Творог 5%</span><span class="portion-amount" data-sergey="120 г" data-elvira="120 г">120 г</span></div>
+            <div class="portion-row"><span class="portion-name">Банан</span><span class="portion-amount" data-sergey="1 шт (~120 г)" data-elvira="1 шт (~100 г)">1 шт (~120 г)</span></div>
+            <div class="back-kcal" data-sergey="≈ 245 ккал" data-elvira="≈ 220 ккал">≈ 245 ккал</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-lunch"></span>Обед</div>
+            <div class="meal-title">Уха из трески + киноа + говядина тушёная с овощами</div>
+            <span class="meal-kcal" data-sergey="625 ккал" data-elvira="510 ккал">625 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Уха из трески (доедаем)</span><span class="portion-amount" data-sergey="400 мл" data-elvira="300 мл">400 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Киноа варёная</span><span class="portion-amount" data-sergey="130 г" data-elvira="100 г">130 г</span></div>
+            <div class="portion-row"><span class="portion-name">Говядина тушёная (с морковью, луком, томатом)</span><span class="portion-amount" data-sergey="120 г" data-elvira="100 г">120 г</span></div>
+            <div class="portion-row"><span class="portion-name">Зелень</span><span class="portion-amount" data-sergey="5 г" data-elvira="5 г">5 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 625 ккал" data-elvira="≈ 510 ккал">≈ 625 ккал</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-aftersnack"></span>Полдник</div>
+            <div class="meal-title">Кефир + груша + хлебцы</div>
+            <span class="meal-kcal" data-sergey="230 ккал" data-elvira="195 ккал">230 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Кефир 2,5%</span><span class="portion-amount" data-sergey="200 мл" data-elvira="200 мл">200 мл</span></div>
+            <div class="portion-row"><span class="portion-name">Груша</span><span class="portion-amount" data-sergey="1 шт (~150 г)" data-elvira="1 шт (~130 г)">1 шт (~150 г)</span></div>
+            <div class="portion-row"><span class="portion-name">Хлебцы</span><span class="portion-amount" data-sergey="2 шт (~20 г)" data-elvira="1 шт (~10 г)">2 шт (~20 г)</span></div>
+            <div class="back-kcal" data-sergey="≈ 230 ккал" data-elvira="≈ 195 ккал">≈ 230 ккал</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-dinner"></span>Ужин</div>
+            <div class="meal-title">Куриная грудка на Optigrill с травами + овощи гриль + бурый рис</div>
+            <span class="meal-kcal" data-sergey="600 ккал" data-elvira="345 ккал">600 ккал</span>
+            <div class="flip-hint">↻ порции</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title" data-sergey="Порции — Сергей" data-elvira="Порции — Эльвира">Порции — Сергей</div>
+            <div class="portion-row"><span class="portion-name">Куриная грудка (сырая → готовая ×0.6)</span><span class="portion-amount" data-sergey="180 г сырого → 110 г" data-elvira="150 г сырого → 90 г">180 г сырого → 110 г</span></div>
+            <div class="portion-row"><span class="portion-name">Овощи гриль (цукини, перец, лук)</span><span class="portion-amount" data-sergey="200 г" data-elvira="200 г">200 г</span></div>
+            <div class="portion-row"><span class="portion-name">Бурый рис варёный (доедаем)</span><span class="portion-amount" data-sergey="130 г" data-elvira="50 г">130 г</span></div>
+            <div class="portion-row"><span class="portion-name">Зелень + ½ ч.л. оливкового масла</span><span class="portion-amount" data-sergey="5 г + 3 г" data-elvira="5 г + 3 г">5 г + 3 г</span></div>
+            <div class="back-kcal" data-sergey="≈ 600 ккал" data-elvira="≈ 345 ккал">≈ 600 ккал</div>
+            <div class="recipe-divider"></div>
+            <div class="recipe-label">Курица + овощи гриль</div>
+            <div class="recipe-step"><div class="recipe-num">1</div><div class="recipe-text"><strong>Курица на двоих ~330 г сырого:</strong> натереть смесью — щепотка соли + прованские травы + чеснок (½ зубчика тёртый) + ½ ч.л. масла. Дать постоять 10 мин.</div></div>
+            <div class="recipe-step"><div class="recipe-num">2</div><div class="recipe-text">Optigrill → программа «птица», <b>7–8 мин</b> до сигнала. Дать «отдохнуть» 3 мин под фольгой.</div></div>
+            <div class="recipe-step"><div class="recipe-num">3</div><div class="recipe-text"><strong>Овощи на двоих ~450 г сырых:</strong> цукини нарезать кружками 8 мм + сладкий перец полосками + лук кольцами. Сбрызнуть маслом, посолить. Optigrill «овощи» <b>6–8 мин</b>.</div></div>
+            <div class="recipe-step"><div class="recipe-num">4</div><div class="recipe-text">Бурый рис разогреть.</div></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /сб -->
+
+    <!-- ══ ВОСКРЕСЕНЬЕ 24 МАЯ — ЧИТМИЛ ══ -->
+    <div class="day-col cheatmeal" data-date="2026-05-24">
+      <div class="day-label">
+        Воскресенье, 24 мая
+        <span class="day-kcal-total">🔥 Читмил-день</span>
+      </div>
+
+      <div class="cheat-banner">
+        <strong>День свободы:</strong> ешьте что хочется, в разумных пределах. Сергею — без алкоголя, белого хлеба, копчёностей и острого. Эльвире — без ограничений по типам, но следить за пропорциями.
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-cheat"></span>Завтрак</div>
+            <div class="meal-title">Читмил — что душа просит</div>
+            <span class="meal-kcal">свободно</span>
+            <div class="flip-hint">↻ идеи</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title">Идеи на завтрак</div>
+            <div class="recipe-step"><div class="recipe-num">·</div><div class="recipe-text">Сырники + сметана + ягоды + кофе с молоком</div></div>
+            <div class="recipe-step"><div class="recipe-num">·</div><div class="recipe-text">Гранола домашняя + йогурт + банан</div></div>
+            <div class="recipe-step"><div class="recipe-num">·</div><div class="recipe-text">Тосты с авокадо и яйцом-пашот</div></div>
+            <div class="recipe-note">Эльвира может позволить любимое из «вписывается в норму»: блины, пп-панкейки, что-то сладкое в меру.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-cheat"></span>Обед</div>
+            <div class="meal-title">Читмил — доедаем остатки или кафе</div>
+            <span class="meal-kcal">свободно</span>
+            <div class="flip-hint">↻ идеи</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title">Идеи на обед</div>
+            <div class="recipe-step"><div class="recipe-num">·</div><div class="recipe-text">Доедаем остатки: уха + говядина + рис</div></div>
+            <div class="recipe-step"><div class="recipe-num">·</div><div class="recipe-text">Бургер на цельнозерновой булке (домашний — котлета говяжья гриль + овощи)</div></div>
+            <div class="recipe-step"><div class="recipe-num">·</div><div class="recipe-text">Кафе: грузинская кухня (хачапури по-аджарски — Сергею ½, шашлык из курицы, лобио, овощи гриль)</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-cheat"></span>Полдник</div>
+            <div class="meal-title">Читмил — фрукты / десерт</div>
+            <span class="meal-kcal">свободно</span>
+            <div class="flip-hint">↻ идеи</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title">Идеи на полдник</div>
+            <div class="recipe-step"><div class="recipe-num">·</div><div class="recipe-text">Зефир / пастила + чай</div></div>
+            <div class="recipe-step"><div class="recipe-num">·</div><div class="recipe-text">Творожный десерт с ягодами</div></div>
+            <div class="recipe-step"><div class="recipe-num">·</div><div class="recipe-text">Мороженое сорбет (Эльвире — что хочется)</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="openCard(this)">
+        <div class="flip-inner">
+          <div class="card-front">
+            <div class="meal-type"><span class="meal-type-dot dot-cheat"></span>Ужин</div>
+            <div class="meal-title">Читмил — пицца на лаваше или ужин в кафе</div>
+            <span class="meal-kcal">свободно</span>
+            <div class="flip-hint">↻ идеи</div>
+          </div>
+          <div class="card-back">
+            <div class="back-title">Идеи на ужин</div>
+            <div class="recipe-step"><div class="recipe-num">·</div><div class="recipe-text">Пицца на цельнозерновом лаваше (томат, моцарелла, курица гриль, овощи, базилик) — Сергею 2–3 куска</div></div>
+            <div class="recipe-step"><div class="recipe-num">·</div><div class="recipe-text">Стейк говядины на Optigrill + запечённый картофель + большой салат</div></div>
+            <div class="recipe-step"><div class="recipe-num">·</div><div class="recipe-text">Ресторан: рыба-стейк (лосось / тунец) + ризотто / овощи гриль</div></div>
+            <div class="recipe-note">Без алкоголя для Сергея!</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /вс -->
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- ════════════════ ПОКУПКИ ════════════════════════════════════ -->
+<!-- ════════════════════════════════════════════════════════════ -->
+
+<section class="section" id="shop">
+
+  <div class="shop-block">
+    <h2>🛒 Большая закупка — Воскресенье 17 мая</h2>
+    <div class="shop-when">На всю неделю · базовый набор</div>
+
+    <div class="shop-category">
+      <h3>🥩 Белок</h3>
+      <div class="shop-item"><span class="shop-item-name">Куриное филе</span><span class="shop-item-qty">~1,1 кг</span></div>
+      <div class="shop-item"><span class="shop-item-name">Филе индейки (стейки на ужин Вт)</span><span class="shop-item-qty">~350 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Фарш индейки</span><span class="shop-item-qty">600 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Говядина нежирная (мякоть, для тушения)</span><span class="shop-item-qty">~300 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Треска филе (для ухи)</span><span class="shop-item-qty">600 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Лосось стейки</span><span class="shop-item-qty">~320 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Яйца куриные С1</span><span class="shop-item-qty">~15 шт</span></div>
+    </div>
+
+    <div class="shop-category">
+      <h3>🥛 Молочные</h3>
+      <div class="shop-item"><span class="shop-item-name">Молоко 1,5–2%</span><span class="shop-item-qty">~1,3 л</span></div>
+      <div class="shop-item"><span class="shop-item-name">Кефир 2,5%</span><span class="shop-item-qty">~1,2 л</span></div>
+      <div class="shop-item"><span class="shop-item-name">Йогурт натуральный без добавок ≤3%</span><span class="shop-item-qty">~1 кг</span></div>
+      <div class="shop-item"><span class="shop-item-name">Творог 5%</span><span class="shop-item-qty">~1,2 кг</span></div>
+      <div class="shop-item"><span class="shop-item-name">Сметана 15%</span><span class="shop-item-qty">100 г (на сырники Чт)</span></div>
+      <div class="shop-item"><span class="shop-item-name">Сыр ≤30%</span><span class="shop-item-qty">100 г (на пасту Пт)</span></div>
+    </div>
+
+    <div class="shop-category">
+      <h3>🌾 Крупы / хлеб / макароны</h3>
+      <div class="shop-item"><span class="shop-item-name">Гречка</span><span class="shop-item-qty">300 г сухой</span></div>
+      <div class="shop-item"><span class="shop-item-name">Булгур</span><span class="shop-item-qty">280 г сухого</span></div>
+      <div class="shop-item"><span class="shop-item-name">Овсяные хлопья (долгой варки)</span><span class="shop-item-qty">160 г (овсянка Ср + котлеты + сырники)</span></div>
+      <div class="shop-item"><span class="shop-item-name">Пшено</span><span class="shop-item-qty">120 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Киноа</span><span class="shop-item-qty">200 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Бурый рис</span><span class="shop-item-qty">250 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Паста твёрдых сортов (Barilla или аналог)</span><span class="shop-item-qty">200 г (на Пт)</span></div>
+      <div class="shop-item"><span class="shop-item-name">Хлеб цельнозерновой</span><span class="shop-item-qty">1 буханка</span></div>
+      <div class="shop-item"><span class="shop-item-name">Хлебцы цельнозерновые</span><span class="shop-item-qty">1 уп. (~150 г)</span></div>
+    </div>
+
+    <div class="shop-category">
+      <h3>🥦 Овощи</h3>
+      <div class="shop-item"><span class="shop-item-name">Тыква</span><span class="shop-item-qty">~800 г (для супа-пюре)</span></div>
+      <div class="shop-item"><span class="shop-item-name">Капуста белокочанная (тушёная Пн + щи)</span><span class="shop-item-qty">~1 кг</span></div>
+      <div class="shop-item"><span class="shop-item-name">Свёкла</span><span class="shop-item-qty">2 шт (~500 г)</span></div>
+      <div class="shop-item"><span class="shop-item-name">Морковь</span><span class="shop-item-qty">~1 кг (в супы, гуляш, тушения)</span></div>
+      <div class="shop-item"><span class="shop-item-name">Лук репчатый</span><span class="shop-item-qty">~600 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Картофель (для супов)</span><span class="shop-item-qty">~500 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Брокколи</span><span class="shop-item-qty">400 г (Вт ужин)</span></div>
+      <div class="shop-item"><span class="shop-item-name">Помидоры (свежие + для гуляша/соуса)</span><span class="shop-item-qty">~1,2 кг</span></div>
+      <div class="shop-item"><span class="shop-item-name">Огурцы свежие</span><span class="shop-item-qty">~700 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Перец сладкий</span><span class="shop-item-qty">2 шт (~300 г) — гуляш + сб гриль</span></div>
+      <div class="shop-item"><span class="shop-item-name">Шпинат свежий</span><span class="shop-item-qty">100 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Кабачок</span><span class="shop-item-qty">2 шт (~700 г) — Чт ужин + Сб</span></div>
+      <div class="shop-item"><span class="shop-item-name">Цукини (для гриля Сб)</span><span class="shop-item-qty">1 шт (~250 г)</span></div>
+      <div class="shop-item"><span class="shop-item-name">Авокадо</span><span class="shop-item-qty">1 шт (~150 г, на Сб)</span></div>
+      <div class="shop-item"><span class="shop-item-name">Чеснок</span><span class="shop-item-qty">1 головка</span></div>
+      <div class="shop-item"><span class="shop-item-name">Зелень (укроп, петрушка, зел. лук, базилик)</span><span class="shop-item-qty">3–4 пучка</span></div>
+    </div>
+
+    <div class="shop-category">
+      <h3>🍎 Фрукты / ягоды</h3>
+      <div class="shop-item"><span class="shop-item-name">Яблоки</span><span class="shop-item-qty">~1,3 кг (6–7 шт)</span></div>
+      <div class="shop-item"><span class="shop-item-name">Груши</span><span class="shop-item-qty">~1,2 кг (7–8 шт)</span></div>
+      <div class="shop-item"><span class="shop-item-name">Бананы</span><span class="shop-item-qty">~1 кг (7–8 шт)</span></div>
+      <div class="shop-item"><span class="shop-item-name">Черника свежая / замороженная</span><span class="shop-item-qty">~250 г</span></div>
+    </div>
+
+    <div class="shop-category">
+      <h3>🫙 Масла, орехи, приправы</h3>
+      <div class="shop-item"><span class="shop-item-name">Масло оливковое extra virgin</span><span class="shop-item-qty">проверь запас</span></div>
+      <div class="shop-item"><span class="shop-item-name">Миндаль сырой</span><span class="shop-item-qty">~80 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Грецкий орех</span><span class="shop-item-qty">~60 г</span></div>
+      <div class="shop-item"><span class="shop-item-name">Кэроб (порошок)</span><span class="shop-item-qty">проверь</span></div>
+      <div class="shop-item"><span class="shop-item-name">Сироп топинамбура</span><span class="shop-item-qty">проверь</span></div>
+      <div class="shop-item"><span class="shop-item-name">Томатная паста / пасатта</span><span class="shop-item-qty">1 банка (~250 г)</span></div>
+      <div class="shop-item"><span class="shop-item-name">Лавровый лист, паприка сладкая, прованские травы</span><span class="shop-item-qty">проверь</span></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- ════════════════ ГОТОВКА ════════════════════════════════════ -->
+<!-- ════════════════════════════════════════════════════════════ -->
+
+<section class="section" id="cook">
+  <div class="info-card">
+    <h2>Готовка 1 — Воскресенье вечер (17 мая)</h2>
+    <p class="subtitle">На Пн–Ср: куриный гуляш, суп-пюре из тыквы, гречка, булгур · ~80 мин активного времени</p>
+
+    <div class="cook-block">
+      <h3>1 — Куриный гуляш с овощами (Turbo Cuisine)</h3>
+      <p class="cook-sub">Скороварка · 800 г куриного филе → ~1100 г готового гуляша с подливой · на 4 приёма (Пн обед+ужин, Вт обед, Ср обед)</p>
+
+      <div class="cook-step"><div class="step-num">1</div>
+        <div class="step-text"><strong>800 г куриного филе</strong> нарезать кубиком 2 см. Подсолить, посыпать сладкой паприкой (1 ч.л.) и прованскими травами.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">2</div>
+        <div class="step-text">Turbo Cuisine «обжаривание» → 1 ст.л. оливкового масла → курица 4 мин, помешивая, до изменения цвета. Вынуть.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">3</div>
+        <div class="step-text">В чашу: <strong>2 луковицы кубиком</strong> → 3 мин обжарить → <strong>2 моркови натёртые</strong> + <strong>1 сладкий перец полосками</strong> → 3 мин → <strong>2 ст.л. томатной пасты</strong> + <strong>3 помидора натёртых</strong> (без кожи) + <strong>300 мл воды</strong> + 1 лавровый лист + ½ ч.л. соли.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">4</div>
+        <div class="step-text">Вернуть курицу. Закрыть крышку. <strong>Программа «тушение под давлением» 15 мин</strong>. Естественный сброс 5 мин.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">5</div>
+        <div class="step-text">В конце — посыпать петрушкой. В контейнер ~1100 г.</div>
+      </div>
+      <div class="tip-box">Курица в гуляше — это <em>не «варёная курица»</em>, она тушится в густой подливе. Решает проблему правила «варёная курица надоела».</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="cook-block">
+      <h3>2 — Суп-пюре из тыквы с морковью (Turbo Cuisine)</h3>
+      <p class="cook-sub">Скороварка · выход ~1,7 л · на 3 обеда (Пн+Вт+Ср)</p>
+
+      <div class="cook-step"><div class="step-num">1</div>
+        <div class="step-text"><strong>800 г тыквы</strong> очистить, нарезать кубиком 2 см. <strong>1 морковь + 1 луковица + 200 г картофеля</strong> — кубиком.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">2</div>
+        <div class="step-text">Turbo Cuisine «обжаривание» → 1 ч.л. оливкового масла → лук 3 мин → морковь 2 мин → добавить тыкву + картофель → залить <strong>1,2 л воды (или овощного бульона)</strong> + ½ ч.л. соли + щепотка мускатного ореха.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">3</div>
+        <div class="step-text">Крышка. <strong>Программа «суп» 15 мин под давлением</strong>. Сброс быстрый.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">4</div>
+        <div class="step-text">Погружным блендером пробить в пюре. Влить <strong>100 мл молока</strong> (можно сливки 10%), прогреть 1 мин. Готово.</div>
+      </div>
+      <div class="tip-box">Тыкву летом найти сложно? Замени на цветную капусту (~700 г) или брокколи. Технология та же.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="cook-block">
+      <h3>3 — Гречка</h3>
+      <p class="cook-sub">Кастрюля · 300 г сухой → ~840 г варёной · на Пн завтрак + Вт обед + Вт ужин</p>
+
+      <div class="cook-step"><div class="step-num">1</div>
+        <div class="step-text"><strong>300 г гречки</strong> промыть. Залить <em>600 мл воды</em> + ½ ч.л. соли.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">2</div>
+        <div class="step-text">Довести до кипения, убавить до минимума, крышка, <strong>15 мин</strong>. Снять, постоять 5 мин. В контейнер.</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="cook-block">
+      <h3>4 — Булгур</h3>
+      <p class="cook-sub">Кастрюля · 280 г сухого → ~780 г варёного · на Пн обед+ужин + Ср обед</p>
+
+      <div class="cook-step"><div class="step-num">1</div>
+        <div class="step-text"><strong>280 г булгура</strong> промыть. Залить <em>560 мл воды</em> + ½ ч.л. соли + 1 ч.л. оливкового масла.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">2</div>
+        <div class="step-text">Довести до кипения, убавить, крышка, <strong>12 мин</strong>. Постоять 5 мин под крышкой. Распушить вилкой.</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="cook-block">
+      <h3>Что в холодильнике после Готовки 1</h3>
+      <div class="storage-grid">
+        <div class="storage-item">
+          <div class="s-label">🍲 Контейнер 1</div>
+          <div class="s-name">Куриный гуляш — ~1100 г</div>
+          <div class="s-uses">Пн обед (280) + Пн ужин (220) + Вт обед (280) + Ср обед (280) = 1060 г</div>
+        </div>
+        <div class="storage-item">
+          <div class="s-label">🎃 Контейнер 2</div>
+          <div class="s-name">Суп-пюре из тыквы — ~1,7 л</div>
+          <div class="s-uses">Пн+Вт+Ср обед × 2 чел</div>
+        </div>
+        <div class="storage-item">
+          <div class="s-label">🌾 Контейнер 3</div>
+          <div class="s-name">Гречка — ~840 г</div>
+          <div class="s-uses">Пн завтрак (300) + Вт обед (280) + Вт ужин (230) = 810 г ✓</div>
+        </div>
+        <div class="storage-item">
+          <div class="s-label">🌾 Контейнер 4</div>
+          <div class="s-name">Булгур — ~780 г</div>
+          <div class="s-uses">Пн обед (280) + Пн ужин (210) + Ср обед (280) = 770 г</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <h2>Готовка 2 — Среда вечер (20 мая)</h2>
+    <p class="subtitle">На Чт–Сб: уха из трески, котлеты из индейки (200°/40), говядина тушёная, киноа, бурый рис, сырники · ~90 мин</p>
+
+    <div class="cook-block">
+      <h3>1 — Уха из трески (Turbo Cuisine)</h3>
+      <p class="cook-sub">Скороварка · выход ~1,9 л · на 3 обеда (Чт+Пт+Сб) · <em>лёгкий бульон, без острых специй, без лимона</em></p>
+
+      <div class="cook-step"><div class="step-num">1</div>
+        <div class="step-text"><strong>1 морковь + 1 луковица</strong> — кубиком. <strong>250 г картофеля</strong> — крупным кубиком.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">2</div>
+        <div class="step-text">Turbo Cuisine «обжаривание» → 1 ч.л. масла → лук 3 мин → морковь 2 мин. Добавить картофель, залить <strong>1,5 л воды</strong> + 1 лавровый лист + ½ ч.л. соли + горошина чёрного перца. Крышка, «суп» 8 мин под давлением, быстрый сброс.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">3</div>
+        <div class="step-text">Открыть. Добавить <strong>600 г филе трески</strong>, нарезанной кусками ~3 см. Включить «варку» (без давления), <strong>5–7 мин</strong> до готовности рыбы.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">4</div>
+        <div class="step-text">Снять с режима, посыпать рубленым укропом и петрушкой (большой пучок). Дать настояться 10 мин. В контейнер.</div>
+      </div>
+      <div class="tip-box">Сергею ухи можно — это лёгкий бульон, а не «наваристый». Без лимона! Заменяет кислинку — свежая зелень в большом количестве.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="cook-block">
+      <h3>2 — Котлеты из индейки ⭐ 200°C / 40 мин · ЗАПУСКАТЬ ПЕРВЫМИ</h3>
+      <p class="cook-sub">Духовка 200°C · 600 г фарша → 12 котлет по ~50 г готовых · на Ср ужин (2+2) + Чт обед (2+2) + Пт обед (2+2)</p>
+
+      <div class="cook-step"><div class="step-num">0</div>
+        <div class="step-text"><b>Важно про Ср ужин:</b> для Ср готовку запусти раньше, ~17:30, чтобы к 19:00 котлеты + киноа были готовы свежими — это первый ужин на новых заготовках.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">1</div>
+        <div class="step-text">Разогреть духовку до <b>200°C</b>. <em>Важно: именно 200°, не меньше — иначе не пропекаются (правило food_rules).</em></div>
+      </div>
+      <div class="cook-step"><div class="step-num">2</div>
+        <div class="step-text"><strong>600 г фарша индейки + 1 яйцо + 40 г овсяных хлопьев (молотых) + 1 луковица натёртая + ½ ч.л. соли + петрушка</strong>. Перемешать руками.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">3</div>
+        <div class="step-text">Слепить <strong>12 котлет по ~55 г сырых</strong> (мокрыми руками). На пергамент в форму.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">4</div>
+        <div class="step-text">Запекать <strong>200°C, 40 мин</strong> — ключевой момент. Поверхность золотистая.</div>
+      </div>
+      <div class="tip-box">⭐ <em>200°C / 40 мин</em> — пользователь подтвердил режим. Не уменьшать. 12 котлет = ровно 3 приёма по 4 шт (2 Сергей + 2 Эльвира).</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="cook-block">
+      <h3>3 — Говядина тушёная с овощами (Turbo Cuisine)</h3>
+      <p class="cook-sub">Скороварка · 300 г говядины → ~200 г готовой говядины + соус ~250 г · на Сб обед</p>
+
+      <div class="cook-step"><div class="step-num">1</div>
+        <div class="step-text"><strong>300 г говядины (мякоть)</strong> нарезать кубиком 2 см. Посолить, посыпать паприкой.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">2</div>
+        <div class="step-text">Turbo Cuisine «обжаривание» → 1 ч.л. масла → мясо 3 мин обжарить до корочки.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">3</div>
+        <div class="step-text">Добавить <strong>1 луковицу кубиком + 1 морковь натёртую</strong> → 3 мин → <strong>1 ст.л. томатной пасты + 1 помидор натёртый + 200 мл воды</strong> + лавровый лист + щепотка соли.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">4</div>
+        <div class="step-text">Крышка. <strong>«Тушение под давлением» 30 мин</strong>. Естественный сброс 10 мин.</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="cook-block">
+      <h3>4 — Киноа</h3>
+      <p class="cook-sub">Кастрюля · 200 г сухой → ~570 г варёной · на Ср ужин + Чт обед + Сб обед</p>
+
+      <div class="cook-step"><div class="step-num">1</div>
+        <div class="step-text"><strong>200 г киноа</strong> промыть в сите 1 мин. Залить <em>400 мл воды</em> + ¼ ч.л. соли.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">2</div>
+        <div class="step-text">Довести до кипения, убавить, крышка, <strong>15 мин</strong>. Постоять 5 мин. Распушить вилкой.</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="cook-block">
+      <h3>5 — Бурый рис</h3>
+      <p class="cook-sub">Кастрюля · 250 г сухой → ~640 г варёного · на Чт ужин + Пт обед + Сб ужин</p>
+
+      <div class="cook-step"><div class="step-num">1</div>
+        <div class="step-text"><strong>250 г бурого риса</strong> промыть 3–4 раза, замочить на 30–60 мин. Слить, залить <em>500 мл воды</em> + ½ ч.л. соли.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">2</div>
+        <div class="step-text">Довести до кипения, убавить до минимума, крышка (щель), <strong>30–35 мин</strong>.</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="cook-block">
+      <h3>6 — Пшено (на Пт завтрак)</h3>
+      <p class="cook-sub">Кастрюля · 120 г сухого → ~340 г варёного · 1 завтрак на двоих</p>
+
+      <div class="cook-step"><div class="step-num">1</div>
+        <div class="step-text"><strong>120 г пшена</strong> тщательно промыть в кипятке (убрать горчинку). Залить <em>300 мл воды</em> + щепотка соли.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">2</div>
+        <div class="step-text">Довести до кипения, убавить, крышка, <strong>20 мин</strong>. В контейнер.</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="cook-block">
+      <h3>7 — Сырники запечённые ⭐ 200°C</h3>
+      <p class="cook-sub">Духовка 200°C · 300 г творога → 7 сырников по ~50 г готовых · на Чт завтрак (4+3 шт)</p>
+
+      <div class="cook-step"><div class="step-num">1</div>
+        <div class="step-text"><strong>300 г творога 5% + 1 яйцо + 30 г овсяных хлопьев (молотых) + 1 ст.л. сиропа топинамбура + щепотка ванили + щепотка соли</strong>. Перемешать.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">2</div>
+        <div class="step-text">Слепить <strong>7 сырников по ~55 г сырых</strong>. На пергамент в форму, сбрызнуть маслом.</div>
+      </div>
+      <div class="cook-step"><div class="step-num">3</div>
+        <div class="step-text">Запекать <strong>200°C, 25 мин</strong>, перевернуть на 15-й минуте. Поверхность золотистая.</div>
+      </div>
+      <div class="tip-box">Можно ставить в духовку одновременно с котлетами (та же температура), просто на 25-й минуте сырники вынуть, а котлеты доготовить ещё 15 мин.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="cook-block">
+      <h3>Что в холодильнике после Готовки 2</h3>
+      <div class="storage-grid">
+        <div class="storage-item">
+          <div class="s-label">🐟 Контейнер 1</div>
+          <div class="s-name">Уха из трески — ~1,9 л</div>
+          <div class="s-uses">Чт+Пт+Сб обед × 2 чел</div>
+        </div>
+        <div class="storage-item">
+          <div class="s-label">🍖 Контейнер 2</div>
+          <div class="s-name">Котлеты индейки — 12 шт (~600 г)</div>
+          <div class="s-uses">Ср ужин (4) + Чт обед (4) + Пт обед (4)</div>
+        </div>
+        <div class="storage-item">
+          <div class="s-label">🥩 Контейнер 3</div>
+          <div class="s-name">Говядина тушёная — ~450 г с соусом</div>
+          <div class="s-uses">Сб обед: 120+100 г + соус</div>
+        </div>
+        <div class="storage-item">
+          <div class="s-label">🌱 Контейнер 4</div>
+          <div class="s-name">Киноа — ~570 г</div>
+          <div class="s-uses">Ср ужин (230) + Чт обед (230) + Сб обед (230) = 690 г — Сергею порции по 130, Эльвире по 100, итог ~690 г — взяли 570 г, чуть впритык; либо уменьшить порции на 10 г, либо доварить +30 г сухой</div>
+        </div>
+        <div class="storage-item">
+          <div class="s-label">🟫 Контейнер 5</div>
+          <div class="s-name">Бурый рис — ~640 г</div>
+          <div class="s-uses">Чт ужин (230) + Пт обед (230) + Сб ужин (180)</div>
+        </div>
+        <div class="storage-item">
+          <div class="s-label">🌕 Контейнер 6</div>
+          <div class="s-name">Пшено — ~340 г</div>
+          <div class="s-uses">Пт завтрак (оба ~310 г)</div>
+        </div>
+        <div class="storage-item">
+          <div class="s-label">🧀 Контейнер 7</div>
+          <div class="s-name">Сырники запечённые — 7 шт (~350 г)</div>
+          <div class="s-uses">Чт завтрак: 4+3 шт</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="cook-block">
+      <h3>Свежее каждый день (без заготовок)</h3>
+      <p class="cook-sub">Что готовится прямо в день блюда</p>
+      <div class="cook-step"><div class="step-num">Пн</div>
+        <div class="step-text"><strong>Ужин:</strong> тушёная капуста с морковью (~20 мин на сковороде).</div>
+      </div>
+      <div class="cook-step"><div class="step-num">Вт</div>
+        <div class="step-text"><strong>Завтрак:</strong> омлет со шпинатом (10 мин). <strong>Ужин:</strong> стейк индейки на Optigrill + брокколи на пару + свежий салат (~15 мин).</div>
+      </div>
+      <div class="cook-step"><div class="step-num">Ср</div>
+        <div class="step-text"><strong>Ужин:</strong> тушёная свёкла с морковью (~20 мин на сковороде). Котлеты и киноа — <em>свежие из Готовки 2</em> (запускай готовку ~17:30, к 19:00 ужин на столе).</div>
+      </div>
+      <div class="cook-step"><div class="step-num">Чт</div>
+        <div class="step-text"><strong>Ужин:</strong> лосось на Optigrill + кабачок с морковью на сковороде (15 мин).</div>
+      </div>
+      <div class="cook-step"><div class="step-num">Пт</div>
+        <div class="step-text"><strong>Ужин:</strong> паста твёрдых сортов с курицей и томатами + сыр + свежий салат (~25 мин).</div>
+      </div>
+      <div class="cook-step"><div class="step-num">Сб</div>
+        <div class="step-text"><strong>Завтрак:</strong> яичница-болтунья + авокадо-тост (10 мин). <strong>Ужин:</strong> куриная грудка на Optigrill + овощи гриль (цукини, перец, лук) (~15 мин).</div>
+      </div>
+      <div class="cook-step"><div class="step-num">Вс</div>
+        <div class="step-text"><strong>Читмил:</strong> доедаем остатки или едим что хочется (см. карточки в разделе «Дни»).</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="ptr" aria-hidden="true">
+  <svg viewBox="0 0 44 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <line id="spr-stem" x1="22" y1="74" x2="22" y2="50" stroke="#7fb069" stroke-width="2.5" stroke-linecap="round"/>
+    <path id="spr-leaf-l" d="M22 62 C13 59 7 51 11 43 C13 41 22 45 22 52 Z" fill="#7fb069" opacity="0"/>
+    <path id="spr-leaf-r" d="M22 55 C31 52 37 44 33 36 C31 34 22 38 22 45 Z" fill="#5a9a42" opacity="0"/>
+    <circle id="spr-bud" cx="22" cy="44" r="5.5" fill="#d4956a" opacity="0"/>
+    <g id="spr-petals" opacity="0">
+      <circle cx="22" cy="34" r="4" fill="#d4956a"/>
+      <circle cx="29" cy="40" r="3.2" fill="#d4956a" opacity="0.75"/>
+      <circle cx="15" cy="40" r="3.2" fill="#d4956a" opacity="0.75"/>
+      <circle cx="28" cy="49" r="2.5" fill="#7fb069" opacity="0.6"/>
+      <circle cx="16" cy="49" r="2.5" fill="#7fb069" opacity="0.6"/>
+    </g>
+  </svg>
+</div>
+
+<div id="card-modal" onclick="if(event.target===this)closeModal()">
+  <div id="card-modal-inner"></div>
+</div>
+
+<script>
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+  function showPerson(p, btn) {
+    document.querySelectorAll('.person-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('[data-sergey]').forEach(el => {
+      if (el.dataset[p] !== undefined) el.textContent = el.dataset[p];
+    });
+    document.querySelectorAll('.kcal-sergey, .kcal-elvira').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.kcal-' + p).forEach(el => el.style.display = '');
+  }
+  function openCard(el) {
+    const back = el.querySelector('.card-back').innerHTML;
+    document.getElementById('card-modal-inner').innerHTML =
+      '<button class="modal-close" onclick="closeModal()">✕</button>' + back;
+    document.getElementById('card-modal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('card-modal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  (function organizeDays() {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const grid = document.querySelector('.days-grid');
+    const cols = Array.from(grid.querySelectorAll('.day-col'));
+    const past = [], present = [], future = [];
+    cols.forEach(col => {
+      const d = col.dataset.date;
+      if (!d) { future.push(col); return; }
+      if (d < todayStr) past.push(col);
+      else if (d === todayStr) present.push(col);
+      else future.push(col);
+    });
+    present.forEach(col => {
+      col.classList.add('today');
+      const label = col.querySelector('.day-label');
+      if (label) label.insertAdjacentHTML('beforeend', '<span class="today-badge">Сегодня</span>');
+    });
+    past.forEach(col => col.classList.add('past'));
+    cols.forEach(c => c.remove());
+    [...present, ...future].forEach(c => grid.appendChild(c));
+    if (past.length > 0) {
+      const sep = document.createElement('div');
+      sep.className = 'past-header';
+      sep.textContent = 'Прошедшие дни';
+      grid.appendChild(sep);
+      past.forEach(c => grid.appendChild(c));
+    }
+  })();
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/health_food/sw.js', { scope: '/health_food/' });
+  }
+  (function () {
+    const ptr = document.getElementById('ptr');
+    const stem = document.getElementById('spr-stem');
+    const leafL = document.getElementById('spr-leaf-l');
+    const leafR = document.getElementById('spr-leaf-r');
+    const bud = document.getElementById('spr-bud');
+    const petals = document.getElementById('spr-petals');
+    const THRESHOLD = 82, STEM_REST = 50, STEM_FULL = 20;
+    let startY = 0, delta = 0, active = false;
+    function draw(p) {
+      ptr.style.top = (-76 + p * 90) + 'px';
+      ptr.style.opacity = Math.min(p * 2.5, 1);
+      const sy = STEM_REST - (STEM_REST - STEM_FULL) * p;
+      stem.setAttribute('y2', sy);
+      bud.setAttribute('cy', sy - 6);
+      const lp = Math.max(0, (p - 0.42) / 0.58);
+      leafL.style.opacity = lp;
+      leafR.style.opacity = lp * 0.85;
+      bud.style.opacity = Math.max(0, (p - 0.70) / 0.30);
+      petals.style.opacity = Math.max(0, (p - 0.88) / 0.12);
+    }
+    function retract() {
+      ptr.style.transition = 'top .28s ease, opacity .22s ease';
+      ptr.style.top = '-76px'; ptr.style.opacity = '0';
+      setTimeout(() => {
+        ptr.style.cssText = '';
+        stem.setAttribute('y2', STEM_REST);
+        bud.setAttribute('cy', STEM_REST - 6);
+        [leafL, leafR, bud, petals].forEach(el => (el.style.opacity = '0'));
+      }, 300);
+    }
+    document.addEventListener('touchstart', e => {
+      if (window.scrollY !== 0) return;
+      startY = e.touches[0].clientY; active = true;
+      ptr.style.cssText = 'transition:none';
+    }, { passive: true });
+    document.addEventListener('touchmove', e => {
+      if (!active) return;
+      delta = Math.max(0, e.touches[0].clientY - startY);
+      draw(Math.min(delta / THRESHOLD, 1));
+    }, { passive: true });
+    document.addEventListener('touchend', () => {
+      if (!active) return; active = false;
+      if (delta > THRESHOLD) {
+        ptr.classList.add('blooming');
+        setTimeout(() => location.reload(), 680);
+      } else { retract(); }
+      delta = 0;
+    });
+  })();
+</script>
+
+</body>
+</html>
